@@ -3,8 +3,195 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Instructor run-sheet — From Code to Silicon</title>
-<link rel="stylesheet" href="assets/style.css">
-<script src="assets/config.js"></script><script src="assets/common.js"></script>
+<style>:root{
+  --bg:#0b1220; --bg2:#111a2e; --card:#16213a; --line:#25335a;
+  --ink:#e8eefc; --mute:#9fb0d3; --teal:#2ee6c5; --amber:#ffb547; --rose:#ff6b8a; --blue:#6aa8ff; --green:#7be36b;
+  --mono: ui-monospace, "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  --sans: "Segoe UI", system-ui, -apple-system, Roboto, "Noto Sans", Arial, sans-serif;
+  --r:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55}
+a{color:var(--teal)}
+code,pre{font-family:var(--mono)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+/* top bar */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(11,18,32,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.topbar .wrap{display:flex;align-items:center;gap:18px;height:56px}
+.brand{font-weight:800;letter-spacing:.3px;color:var(--ink);text-decoration:none;white-space:nowrap}
+.brand span{color:var(--teal)}
+.nav{display:flex;gap:4px;overflow-x:auto;margin-left:auto}
+.nav a{color:var(--mute);text-decoration:none;padding:6px 10px;border-radius:8px;font-size:14px;white-space:nowrap}
+.nav a:hover,.nav a.on{background:var(--card);color:var(--ink)}
+/* hero */
+.hero{padding:56px 0 30px;background:
+  radial-gradient(900px 300px at 80% -10%, rgba(46,230,197,.18), transparent 60%),
+  radial-gradient(700px 300px at 0% 0%, rgba(106,168,255,.15), transparent 60%)}
+.kicker{color:var(--amber);font-weight:700;letter-spacing:2px;text-transform:uppercase;font-size:13px}
+h1{font-size:clamp(32px,5vw,54px);line-height:1.08;margin:10px 0}
+h1 .grad{background:linear-gradient(90deg,var(--teal),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-size:26px;margin:38px 0 12px}
+h3{margin:22px 0 8px}
+.lead{color:var(--mute);font-size:18px;max-width:760px}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.chip{background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:999px;font-size:14px;color:var(--ink)}
+/* cards */
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+a.card{text-decoration:none;color:var(--ink);transition:transform .15s,border-color .15s}
+a.card:hover{transform:translateY(-3px);border-color:var(--teal)}
+.card .ico{font-size:28px}
+.card h3{margin:8px 0 4px}
+.card p{margin:0;color:var(--mute);font-size:15px}
+/* table */
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:15px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--amber);font-weight:700}
+tr.brk td{color:var(--mute);font-style:italic}
+/* code */
+.codebox{position:relative;margin:12px 0}
+.codebox .bar{display:flex;align-items:center;gap:8px;background:#0a1020;border:1px solid var(--line);border-bottom:none;border-radius:10px 10px 0 0;padding:6px 10px;font-size:13px;color:var(--mute)}
+.codebox .bar b{color:var(--ink);font-family:var(--mono);font-weight:600}
+.codebox pre{margin:0;background:#070d1a;border:1px solid var(--line);border-radius:0 0 10px 10px;padding:14px;overflow:auto;max-height:520px;font-size:13.5px;line-height:1.5}
+.btn{display:inline-flex;align-items:center;gap:6px;background:var(--teal);color:#05221c;border:0;border-radius:9px;padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer;text-decoration:none}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.small{padding:4px 10px;font-size:12.5px}
+.btn.amber{background:var(--amber);color:#2b1a00}
+.bar .btn{margin-left:auto}
+/* syntax colours */
+.c-com{color:#6f86b5;font-style:italic}.c-kw{color:#ff9ac1}.c-str{color:#ffd479}.c-num{color:#9be9a8}.c-pp{color:#7dd3fc}.c-fn{color:#8ab4ff}
+/* callouts */
+.note{border-left:4px solid var(--blue);background:rgba(106,168,255,.08);padding:12px 14px;border-radius:0 10px 10px 0;margin:14px 0}
+.note.warn{border-color:var(--amber);background:rgba(255,181,71,.08)}
+.note.ok{border-color:var(--green);background:rgba(123,227,107,.08)}
+.try{border:1px dashed var(--teal);border-radius:12px;padding:14px 16px;margin:14px 0}
+.try h4{margin:0 0 6px;color:var(--teal)}
+details{background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:10px 0}
+details summary{cursor:pointer;font-weight:700;color:var(--amber)}
+ol li,ul li{margin:4px 0}
+.pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(46,230,197,.15);color:var(--teal);margin-right:6px}
+.pill.deep{background:rgba(255,107,138,.15);color:var(--rose)}
+footer{border-top:1px solid var(--line);margin-top:60px;padding:24px 0;color:var(--mute);font-size:14px}
+/* lab tabs */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0}
+.tabs button{background:var(--card);color:var(--mute);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-weight:700;cursor:pointer;font-size:14px}
+.tabs button.on{color:#05221c;background:var(--teal);border-color:var(--teal)}
+.lab{display:none}.lab.on{display:block}
+.steps{counter-reset:s;list-style:none;padding:0}
+.steps li{counter-increment:s;position:relative;padding:4px 0 4px 40px}
+.steps li::before{content:counter(s);position:absolute;left:0;top:4px;width:26px;height:26px;border-radius:50%;background:var(--card);border:1px solid var(--teal);color:var(--teal);font-weight:800;font-size:13px;display:grid;place-items:center}
+.qr{background:#fff;padding:8px;border-radius:10px;display:inline-block;line-height:0}
+.qr img,.qr svg{width:150px;height:150px}
+@media print{
+  .topbar,.noprint{display:none!important}
+  body{background:#fff;color:#000}
+}
+</style>
+<script>/* ==========================================================================
+   Workshop configuration - edit this file only; every page reads from it.
+   ========================================================================== */
+window.WS = {
+  title: "From Code to Silicon",
+  caption: "Blink. Sense. Connect.",
+  subtitle: "A hands-on embedded systems workshop with the ESP32",
+  host: "Department of Computer Science & Engineering, NAVKIS College of Engineering, Hassan",
+  date: "Wednesday, 25 November 2026",
+  time: "10:30 AM – 4:00 PM",
+  speaker: "Dr. Sathisha R N",
+  speakerRole: "Assistant Professor, Dept. of Electronics & Telecommunication Engg., Siddaganga Institute of Technology, Tumakuru",
+  speakerEmail: "satisharyan@gmail.com",
+
+  /* Wokwi project links. Create each project once in your Wokwi account
+     (see README), then paste its share link here. Leave "" to show students
+     the copy-paste steps instead.                                           */
+  wokwi: {
+    lab1: "", lab2: "", lab3: "", lab4: "", lab5: "", lab6: "", challenge: ""
+  },
+
+  /* MQTT broker for Lab 5 + the live class dashboard.
+     The ESP32 uses TCP 1883; the browser dashboard uses secure WebSockets. */
+  mqtt: {
+    topicRoot: "navkis/ews2026",
+    brokers: {
+      hivemq: { name: "HiveMQ public", esp: "broker.hivemq.com", wss: "wss://broker.hivemq.com:8884/mqtt" },
+      emqx:   { name: "EMQX public",   esp: "broker.emqx.io",    wss: "wss://broker.emqx.io:8084/mqtt" }
+    },
+    defaultBroker: "hivemq"
+  },
+
+  /* Optional: Google Apps Script web-app URL that records quiz scores
+     (code in README.md). Leave "" to keep scores on the student's screen only. */
+  quizScriptUrl: "",
+  feedbackFormUrl: ""
+};
+</script><script src="config.js"></script><script>/* Shared helpers: top navigation, copy buttons, light C++ highlighting, QR codes */
+(function () {
+  const PAGES = [
+    ["index.html", "Home"], ["slides.html", "Slides"], ["labs.html", "Labs"],
+    ["dashboard.html", "Live Dashboard"], ["quiz.html", "Quiz"], ["handout.html", "Handout"]
+  ];
+  const here = location.pathname.split("/").pop() || "index.html";
+
+  function topbar() {
+    const el = document.getElementById("topbar");
+    if (!el) return;
+    el.className = "topbar";
+    el.innerHTML = '<div class="wrap"><a class="brand" href="index.html">From Code to <span>Silicon</span></a><nav class="nav">' +
+      PAGES.map(([h, t]) => `<a href="${h}" class="${h === here ? "on" : ""}">${t}</a>`).join("") + "</nav></div>";
+  }
+
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  // Small, safe C/C++ highlighter (tokenises comments and strings first)
+  function highlight(src) {
+    const re = /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|("(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])')|(^\s*#\s*\w+)|\b(\d+(?:\.\d+)?[fFLuU]*|0x[0-9a-fA-F]+)\b|\b(void|int|float|bool|char|const|unsigned|long|byte|String|if|else|while|for|return|true|false|volatile|static|struct|uint8_t|uint32_t|HIGH|LOW|INPUT|OUTPUT|INPUT_PULLUP|FALLING|RISING|CHANGE|NULL|IRAM_ATTR|QueueHandle_t)\b|\b([A-Za-z_]\w*)(?=\s*\()/gm;
+    let out = "", last = 0, m;
+    while ((m = re.exec(src))) {
+      out += esc(src.slice(last, m.index));
+      const t = esc(m[0]);
+      out += m[1] ? `<span class="c-com">${t}</span>` : m[2] ? `<span class="c-str">${t}</span>` :
+             m[3] ? `<span class="c-pp">${t}</span>` : m[4] ? `<span class="c-num">${t}</span>` :
+             m[5] ? `<span class="c-kw">${t}</span>` : `<span class="c-fn">${t}</span>`;
+      last = re.lastIndex;
+    }
+    return out + esc(src.slice(last));
+  }
+
+  function codeboxes() {
+    document.querySelectorAll("pre[data-hl]").forEach(pre => {
+      pre.innerHTML = highlight(pre.textContent);
+    });
+    document.querySelectorAll("[data-copy]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const pre = document.getElementById(btn.dataset.copy);
+        const text = pre.textContent;
+        const done = () => { const o = btn.textContent; btn.textContent = "Copied \u2713"; setTimeout(() => btn.textContent = o, 1400); };
+        if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done);
+        else { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); ta.remove(); done(); }
+      });
+    });
+  }
+
+  // QR code for an absolute URL built from a page name relative to this site
+  const SITE_BASE = "https://satisahryan.github.io/NAVKIS_Embedded/";   // used when opened from a file
+  window.siteUrl = function (page) {
+    const base = location.protocol.startsWith("http") ? location.href : SITE_BASE;
+    return new URL(page || "", base).href.split("#")[0].replace(/index\.html$/, "");
+  };
+  window.qrInto = function (el, url, cell) {
+    if (!el || typeof qrcode === "undefined") return;
+    const q = qrcode(0, "M"); q.addData(url); q.make();
+    el.innerHTML = q.createSvgTag({ cellSize: cell || 4, margin: 2, scalable: true });
+  };
+
+  document.addEventListener("DOMContentLoaded", () => {
+    topbar(); codeboxes();
+    document.querySelectorAll("[data-qr]").forEach(el => qrInto(el, siteUrl(el.dataset.qr)));
+    document.querySelectorAll("[data-ws]").forEach(el => { const v = window.WS && WS[el.dataset.ws]; if (v) el.textContent = v; });
+  });
+  window.highlightCode = highlight;
+})();
+</script>
 <style>td:first-child{white-space:nowrap;font-family:var(--mono);color:var(--teal)}@media print{body{font-size:11px}}</style>
 </head><body>
 <main class="wrap">

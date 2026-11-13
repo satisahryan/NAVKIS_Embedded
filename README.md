@@ -14,7 +14,7 @@ Resource person: **Dr. Sathisha R N**, Siddaganga Institute of Technology, Tumak
 | `handout.html` | Printable 2-page handout (Print → Save as PDF) |
 | `instructor.html` | Run-sheet for the instructor (not linked from the other pages) |
 | `labs/<lab>/` | `sketch.ino`, `diagram.json`, `libraries.txt` and solutions for each lab |
-| `assets/config.js` | **The only file you need to edit** |
+| `assets/config.js` | **The only file you need to edit** (in this upload it sits in the root as `config.js`) |
 
 All sketches compile against ESP32 Arduino core 3.3.8 and use the Wokwi **ESP32 DevKitC V4** board.
 
