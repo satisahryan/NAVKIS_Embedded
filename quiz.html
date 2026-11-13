@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quiz — From Code to Silicon</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/config.js"></script>
+<script src="assets/vendor/qrcode.js"></script>
+<script src="assets/common.js"></script>
+<style>
+.qcard{max-width:720px;margin:20px auto}
+.opt{display:block;width:100%;text-align:left;background:var(--bg2);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin:8px 0;font-size:16px;cursor:pointer}
+.opt:hover{border-color:var(--teal)}
+.opt.right{border-color:var(--green);background:rgba(123,227,107,.12)}
+.opt.wrong{border-color:var(--rose);background:rgba(255,107,138,.12)}
+.prog{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin:10px 0 18px}.prog i{display:block;height:100%;background:var(--teal);transition:width .3s}
+input{width:100%;background:var(--bg2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:12px;font-size:16px;margin:6px 0 12px}
+.score{font-size:64px;font-weight:800;color:var(--teal);text-align:center}
+</style></head><body>
+<header id="topbar"></header>
+<main class="wrap"><div class="qcard card" id="app"></div>
+<div style="text-align:center;margin-top:20px" class="noprint"><div class="qr" data-qr="quiz.html"></div><div style="color:var(--mute);font-size:14px">Scan to open the quiz on your phone</div></div>
+</main>
+<script>
+const Q = [
+ ["Which of these best describes an embedded system?",["A laptop running Linux","A computer dedicated to one job inside a larger product","Any program written in C","A cloud server for IoT data"],1,"An embedded system is a computer built into a product to do a specific job — a washing machine controller, a smart meter, an ECU in a car."],
+ ["The ESP32 ADC is set to 12-bit resolution. What is the largest value analogRead() can return?",["255","1023","4095","65535"],2,"12 bits gives 2¹² = 4096 levels: 0 to 4095."],
+ ["A button connects a pin to GND and the pin uses INPUT_PULLUP. What does digitalRead() return while the button is pressed?",["HIGH","LOW","It floats randomly","4095"],1,"The pull-up holds the pin HIGH; pressing connects it to GND, so it reads LOW."],
+ ["Why is millis() preferred over delay() for timing in loop()?",["millis() is more accurate","delay() blocks the CPU, while millis() lets loop() keep doing other work","delay() uses more power","millis() works only with interrupts"],1,"delay() stops everything. With millis() you check the clock and act when it is time, so many things can run 'at once'."],
+ ["A variable is changed inside an interrupt service routine and read in loop(). How should it be declared?",["static","const","volatile","register"],2,"volatile tells the compiler the value can change at any time, so it must re-read it from memory."],
+ ["Which of these should you avoid inside an ISR?",["Setting a flag","Reading millis()","Calling delay() or printing long messages","Incrementing a counter"],2,"ISRs must be short. Blocking calls and slow I/O belong in the main code."],
+ ["A 3.3 V PWM signal has a 25% duty cycle. What is its average voltage?",["0.25 V","0.83 V","1.65 V","2.48 V"],1,"Average = duty × Vhigh = 0.25 × 3.3 ≈ 0.83 V."],
+ ["How many signal wires does the I²C bus use (not counting power and ground)?",["1","2","3","4"],1,"SDA (data) and SCL (clock). Each device has an address, e.g. 0x3C for the OLED."],
+ ["An LED with a 2.0 V drop is driven from 3.3 V through a 220 Ω resistor. The current is about…",["0.6 mA","6 mA","15 mA","60 mA"],1,"I = (3.3 − 2.0) / 220 ≈ 5.9 mA."],
+ ["In MQTT, which component receives published messages and forwards them to subscribers?",["Client","Topic","Broker","Gateway"],2,"Devices never talk directly; the broker routes messages by topic."],
+ ["Your ESP32 must react to 'ON'/'OFF' commands sent from a dashboard. It must…",["publish to the command topic","subscribe to the command topic","open an HTTP server","poll the dashboard every second"],1,"Subscribing means the broker pushes every new message on that topic to the device."],
+ ["Which bus usually needs a separate chip-select (CS) line for each device?",["UART","I²C","SPI","1-Wire"],2,"SPI selects devices with CS lines; I²C uses addresses instead."],
+ ["In FreeRTOS, what does vTaskDelay(pdMS_TO_TICKS(500)) do?",["Freezes the whole CPU for 500 ms","Blocks only the calling task, so other tasks can run","Resets the board after 500 ms","Deletes the task after 500 ms"],1,"The scheduler moves the task to the Blocked state and runs other ready tasks."],
+ ["'Switch bounce' means…",["the button springs back after release","the contacts make several rapid on/off transitions when pressed","the pin is left floating","the interrupt fires on both edges"],1,"Mechanical contacts chatter for a few milliseconds. We debounce in hardware or software."],
+ ["Why should GPIO 6–11 on an ESP32 DevKit be left unused?",["They are input-only","They are connected to the on-board SPI flash","They are 5 V pins","They have no pull-ups"],1,"Using them interferes with the flash memory that holds your program, and the board crashes."]
+];
+let i = 0, score = 0, name = '', usn = '', answers = [];
+const app = document.getElementById('app');
+function start(){
+  app.innerHTML = `<div class="kicker">From Code to Silicon · Quiz</div><h2 style="margin-top:6px">15 questions · about 8 minutes</h2>
+  <p style="color:var(--mute)">One attempt. You see the right answer after each question.</p>
+  <label>Name<input id="nm" autocomplete="name"></label><label>USN<input id="usn" style="text-transform:uppercase"></label>
+  <button class="btn" id="go">Start quiz</button>`;
+  document.getElementById('go').onclick = () => {
+    name = document.getElementById('nm').value.trim(); usn = document.getElementById('usn').value.trim().toUpperCase();
+    if (!name) { alert('Please enter your name'); return; } show();
+  };
+}
+function show(){
+  const [q, opts0, ans0, why] = Q[i];
+  const order = opts0.map((_, k) => k).sort(() => Math.random() - 0.5);   // shuffle options
+  const opts = order.map(k => opts0[k]), ans = order.indexOf(ans0);
+  app.innerHTML = `<div style="display:flex;justify-content:space-between;color:var(--mute)"><span>Question ${i+1} of ${Q.length}</span><span>Score ${score}</span></div>
+  <div class="prog"><i style="width:${i/Q.length*100}%"></i></div><h3 style="font-size:20px">${q}</h3>
+  ${opts.map((o,k)=>`<button class="opt" data-k="${k}">${String.fromCharCode(65+k)}. ${o}</button>`).join('')}<div id="fb"></div>`;
+  app.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+    const k = +b.dataset.k; answers.push(k === ans ? 1 : 0);
+    app.querySelectorAll('.opt').forEach(x => { x.disabled = true; if (+x.dataset.k === ans) x.classList.add('right'); });
+    if (k === ans) score++; else b.classList.add('wrong');
+    document.getElementById('fb').innerHTML = `<div class="note ${k===ans?'ok':'warn'}"><b>${k===ans?'Correct!':'Not quite.'}</b> ${why}</div>
+      <button class="btn" id="nx">${i < Q.length-1 ? 'Next →' : 'See my score'}</button>`;
+    document.getElementById('nx').onclick = () => { i++; i < Q.length ? show() : finish(); };
+  });
+}
+function finish(){
+  const pct = Math.round(score / Q.length * 100);
+  const msg = pct >= 80 ? 'Excellent — you think like a firmware engineer!' : pct >= 50 ? 'Good work. Revisit the labs you found tricky.' : 'Good start. Try the labs again at home in Wokwi.';
+  app.innerHTML = `<div class="kicker">Well done, ${name.replace(/</g,'&lt;')}</div><div class="score">${score}/${Q.length}</div>
+  <p style="text-align:center;font-size:18px">${msg}</p><p id="sub" style="text-align:center;color:var(--mute)"></p>
+  ${WS.feedbackFormUrl ? `<p style="text-align:center"><a class="btn amber" href="${WS.feedbackFormUrl}" target="_blank" rel="noopener">Give feedback</a></p>` : ''}`;
+  if (WS.quizScriptUrl) {
+    document.getElementById('sub').textContent = 'Sending your score…';
+    fetch(WS.quizScriptUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ name, usn, score, total: Q.length, answers: answers.join(''), ts: new Date().toISOString() }) })
+      .then(() => document.getElementById('sub').textContent = 'Score recorded ✓')
+      .catch(() => document.getElementById('sub').textContent = 'Could not send the score — show this screen to your instructor.');
+  }
+}
+start();
+</script>
+</body></html>

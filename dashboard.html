@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Live Class Dashboard — From Code to Silicon</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/config.js"></script>
+<script src="assets/vendor/qrcode.js"></script>
+<script src="assets/common.js"></script>
+<script src="assets/vendor/mqtt.min.js"></script>
+<style>
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:16px 0}
+select,input{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:14px}
+.status{font-weight:700}.status.ok{color:var(--green)}.status.bad{color:var(--rose)}.status.wait{color:var(--amber)}
+.big{font-size:44px;font-weight:800;color:var(--teal);line-height:1}
+.tiles{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;transition:opacity .3s,border-color .3s}
+.tile.fresh{border-color:var(--teal);box-shadow:0 0 0 2px rgba(46,230,197,.25)}
+.tile.stale{opacity:.45}
+.tile .nm{font-weight:800;font-size:16px;word-break:break-all}
+.tile .vals{display:flex;gap:14px;margin:8px 0;font-family:var(--mono)}
+.tile .vals b{font-size:22px}
+.led{display:inline-block;width:14px;height:14px;border-radius:50%;background:#333;vertical-align:middle;margin-right:6px;border:1px solid #555}
+.led.on{background:#ffd447;box-shadow:0 0 12px #ffd447}
+.tile .row{display:flex;gap:6px;align-items:center}
+.tile .ago{color:var(--mute);font-size:12px;margin-left:auto}
+.log{font-family:var(--mono);font-size:12px;color:var(--mute);max-height:160px;overflow:auto;background:#070d1a;border:1px solid var(--line);border-radius:10px;padding:8px;margin-top:16px}
+</style></head><body>
+<header id="topbar"></header>
+<main class="wrap">
+<section class="hero" style="padding-bottom:6px;display:flex;gap:24px;flex-wrap:wrap;align-items:center">
+  <div style="flex:1;min-width:280px">
+    <div class="kicker">Lab 5 · MQTT · live</div>
+    <h1 style="margin:6px 0">Live Class Dashboard</h1>
+    <p class="lead">Every simulated ESP32 that publishes to <code id="root"></code> appears here. Tap <b>ON</b> or <b>OFF</b> to switch that student’s LED.</p>
+  </div>
+  <div style="text-align:center"><div class="big" id="count">0</div><div style="color:var(--mute)">devices online</div></div>
+  <div class="qr" id="qr"></div>
+</section>
+<div class="controls">
+  <label>Broker <select id="broker"></select></label>
+  <button class="btn" id="connect">Connect</button>
+  <span class="status wait" id="status">Not connected</span>
+  <input id="filter" placeholder="Filter by name…" style="margin-left:auto">
+  <button class="btn ghost small" id="allon">All ON</button>
+  <button class="btn ghost small" id="alloff">All OFF</button>
+  <button class="btn ghost small" id="demo" title="Adds fake devices so you can rehearse without the network">Demo mode</button>
+</div>
+<div class="tiles" id="tiles"></div>
+<p id="empty" style="color:var(--mute)">Waiting for devices… Start Lab 5 in Wokwi with your own name in <code>STUDENT</code>.</p>
+<details><summary>Message log</summary><div class="log" id="log"></div></details>
+</main>
+<script>
+const M = WS.mqtt, ROOT = M.topicRoot;
+document.getElementById('root').textContent = ROOT + '/<name>/data';
+const sel = document.getElementById('broker');
+for (const k in M.brokers) sel.add(new Option(M.brokers[k].name + ' (' + M.brokers[k].esp + ')', k, false, k === M.defaultBroker));
+qrInto(document.getElementById('qr'), siteUrl('dashboard.html'));
+
+const devices = {};      // name -> {t,h,led,seen}
+let client = null, demoTimer = null;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function log(s){ const l=$('log'); l.textContent = new Date().toLocaleTimeString()+'  '+s+'\n'+l.textContent.slice(0,8000); }
+function setStatus(t, c){ const s=$('status'); s.textContent=t; s.className='status '+c; }
+
+function connect(){
+  if (client) { client.end(true); client = null; }
+  const b = M.brokers[sel.value];
+  setStatus('Connecting to ' + b.name + '…', 'wait');
+  client = mqtt.connect(b.wss, { clientId: 'navkis-dash-' + Math.random().toString(16).slice(2,8), reconnectPeriod: 3000, connectTimeout: 8000 });
+  client.on('connect', () => { setStatus('Connected to ' + b.name, 'ok'); client.subscribe(ROOT + '/+/data'); log('subscribed ' + ROOT + '/+/data'); });
+  client.on('reconnect', () => setStatus('Reconnecting…', 'wait'));
+  client.on('error', e => { setStatus('Error: ' + e.message, 'bad'); log('error ' + e.message); });
+  client.on('offline', () => setStatus('Offline — check the network or try the other broker', 'bad'));
+  client.on('message', (topic, payload) => {
+    const parts = topic.split('/'); const name = parts[parts.length - 2];
+    let d = {}; try { d = JSON.parse(payload.toString()); } catch (e) { d = { raw: payload.toString() }; }
+    update(name, d); log(topic + '  ' + payload.toString());
+  });
+}
+function update(name, d){
+  const dev = devices[name] || (devices[name] = {});
+  Object.assign(dev, d, { seen: Date.now() }); render(name);
+}
+function send(name, cmd){
+  if (devices[name] && devices[name].demo) { devices[name].led = cmd === 'ON' ? 1 : 0; render(name); return; }
+  if (!client || !client.connected) { alert('Connect to the broker first'); return; }
+  client.publish(ROOT + '/' + name + '/led', cmd); log('-> ' + name + ' ' + cmd);
+}
+function render(changed){
+  const f = $('filter').value.toLowerCase(), now = Date.now();
+  const names = Object.keys(devices).sort((a,b)=>a.localeCompare(b));
+  $('tiles').innerHTML = names.filter(n => n.toLowerCase().includes(f)).map(n => {
+    const d = devices[n], age = Math.round((now - d.seen) / 1000);
+    const num = v => (typeof v === 'number' && isFinite(v)) ? v.toFixed(1) : '–';
+    return `<div class="tile ${age > 20 ? 'stale' : ''} ${n === changed ? 'fresh' : ''}">
+      <div class="nm">${esc(n)}</div>
+      <div class="vals"><span><b>${num(d.t)}</b> °C</span><span><b>${num(d.h)}</b> %</span></div>
+      <div class="row"><span class="led ${d.led ? 'on' : ''}"></span>
+        <button class="btn small" data-n="${esc(n)}" data-c="ON">ON</button>
+        <button class="btn ghost small" data-n="${esc(n)}" data-c="OFF">OFF</button>
+        <span class="ago">${age}s ago</span></div></div>`;
+  }).join('');
+  const online = names.filter(n => now - devices[n].seen < 20000).length;
+  $('count').textContent = online; $('empty').style.display = names.length ? 'none' : '';
+}
+$('tiles').addEventListener('click', e => { const b = e.target.closest('button[data-n]'); if (b) send(b.dataset.n, b.dataset.c); });
+$('connect').onclick = connect;
+$('filter').oninput = () => render();
+$('allon').onclick = () => Object.keys(devices).forEach(n => send(n, 'ON'));
+$('alloff').onclick = () => Object.keys(devices).forEach(n => send(n, 'OFF'));
+$('demo').onclick = () => {
+  if (demoTimer) { clearInterval(demoTimer); demoTimer = null; for (const n in devices) if (devices[n].demo) delete devices[n]; render(); return; }
+  const names = ['ananya','bharath','chaitra','darshan','eshwar','farhan','gagana','harsha'];
+  demoTimer = setInterval(() => { const n = names[Math.floor(Math.random()*names.length)];
+    update(n, { t: 24 + Math.random()*12, h: 45 + Math.random()*30, led: devices[n] ? devices[n].led : 0, demo: true }); }, 700);
+};
+setInterval(render, 2000);
+connect();
+</script>
+</body></html>

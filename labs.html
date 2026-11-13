@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Labs — From Code to Silicon</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F50C;</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/config.js"></script>
+<script src="assets/vendor/qrcode.js"></script>
+<script src="assets/common.js"></script>
+</head><body>
+<header id="topbar"></header>
+<main class="wrap"><section class="hero" style="padding-bottom:0"><div class="kicker">Hands-on labs &middot; ESP32 in the Wokwi simulator</div>
+<h1>Labs</h1><p class="lead">Every lab runs in your browser &mdash; no board and no installation needed. Work in pairs: one person types, the other reads the steps aloud. Swap after each lab.</p></section>
+<div class="tabs noprint"><button data-lab="lab1" class="on">Lab 1</button><button data-lab="lab2" class="">Lab 2</button><button data-lab="lab3" class="">Lab 3</button><button data-lab="lab4" class="">Lab 4</button><button data-lab="lab5" class="">Lab 5</button><button data-lab="lab6" class="">Lab 6</button><button data-lab="challenge" class="">Challenge</button></div><section class="lab on" id="lab1">
+<span class="pill">Session 2 &middot; 15 min</span><h2 style="margin-top:8px">Lab 1: Hello, GPIO!</h2><p class="lead">Drive an output pin from code, see the cost of <code>delay()</code>, and learn the <code>millis()</code> pattern every firmware engineer uses.</p>
+<h3>Circuit</h3>
+<table><tr><th>Part</th><th>Part pin</th><th>ESP32 pin</th></tr><tr><td>Red LED (anode, long leg)</td><td>A &rarr; via 220 &Omega; resistor</td><td><code>GPIO 26</code></td></tr><tr><td>Red LED (cathode)</td><td>C</td><td><code>GND</code></td></tr><tr><td>Green LED (for Try-this)</td><td>A &rarr; via 220 &Omega;</td><td><code>GPIO 27</code></td></tr></table>
+<div class="note">Why 220 &Omega;? A red LED drops about 2 V, so the current is (3.3 &minus; 2.0) / 220 &asymp; <b>6 mA</b> &mdash; bright enough and safe for the pin.</div>
+
+<div class="card" style="margin:14px 0">
+  <div id="wk-lab1"></div>
+  <details><summary>No link yet? Build the project yourself in 1 minute</summary>
+  <ol class="steps">
+    <li>Open <a href="https://wokwi.com/projects/new/esp32" target="_blank" rel="noopener">wokwi.com/projects/new/esp32</a> (a blank ESP32 project).</li>
+    <li>Click the <b>diagram.json</b> tab, select all, and paste the <b>diagram.json</b> below. The parts and wires appear.</li>
+    <li>Click the <b>sketch.ino</b> tab, select all, and paste the sketch.</li>
+    
+    <li>Press the green <b>&#9654; Start</b> button. Output appears in the Serial Monitor at the bottom.</li>
+  </ol>
+  <div class="codebox"><div class="bar"><b>diagram.json</b><button class="btn small" data-copy="code1">Copy</button></div><pre id="code1" data-hl>{
+  &quot;version&quot;: 1,
+  &quot;author&quot;: &quot;Dr. Sathisha R N - NAVKIS Embedded Systems Workshop&quot;,
+  &quot;editor&quot;: &quot;wokwi&quot;,
+  &quot;parts&quot;: [
+    {
+      &quot;type&quot;: &quot;board-esp32-devkit-c-v4&quot;,
+      &quot;id&quot;: &quot;esp&quot;,
+      &quot;top&quot;: 0,
+      &quot;left&quot;: 0,
+      &quot;attrs&quot;: {}
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-resistor&quot;,
+      &quot;id&quot;: &quot;r1&quot;,
+      &quot;top&quot;: 28,
+      &quot;left&quot;: 140,
+      &quot;rotate&quot;: 0,
+      &quot;attrs&quot;: {
+        &quot;value&quot;: &quot;220&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-led&quot;,
+      &quot;id&quot;: &quot;led1&quot;,
+      &quot;top&quot;: -40,
+      &quot;left&quot;: 230,
+      &quot;attrs&quot;: {
+        &quot;color&quot;: &quot;red&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-resistor&quot;,
+      &quot;id&quot;: &quot;r2&quot;,
+      &quot;top&quot;: 128,
+      &quot;left&quot;: 140,
+      &quot;rotate&quot;: 0,
+      &quot;attrs&quot;: {
+        &quot;value&quot;: &quot;220&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-led&quot;,
+      &quot;id&quot;: &quot;led2&quot;,
+      &quot;top&quot;: 60,
+      &quot;left&quot;: 230,
+      &quot;attrs&quot;: {
+        &quot;color&quot;: &quot;green&quot;
+      }
+    }
+  ],
+  &quot;connections&quot;: [
+    [
+      &quot;esp:TX&quot;,
+      &quot;$serialMonitor:RX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:RX&quot;,
+      &quot;$serialMonitor:TX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:26&quot;,
+      &quot;r1:1&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;r1:2&quot;,
+      &quot;led1:A&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;led1:C&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;esp:27&quot;,
+      &quot;r2:1&quot;,
+      &quot;green&quot;,
+      []
+    ],
+    [
+      &quot;r2:2&quot;,
+      &quot;led2:A&quot;,
+      &quot;green&quot;,
+      []
+    ],
+    [
+      &quot;led2:C&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ]
+  ],
+  &quot;dependencies&quot;: {}
+}</pre></div>
+  
+  </details>
+</div>
+<div class="codebox"><div class="bar"><b>sketch.ino</b><button class="btn small" data-copy="code2">Copy</button></div><pre id="code2" data-hl>// Lab 1 - Hello, GPIO!  (ESP32 DevKitC V4 in Wokwi)
+// An LED on GPIO 26 (through a 220 ohm resistor) blinks once a second.
+
+const int LED_PIN = 26;        // the GPIO pin our LED is wired to
+
+void setup() {
+  Serial.begin(115200);        // open the serial monitor (115200 baud)
+  pinMode(LED_PIN, OUTPUT);    // configure GPIO 26 as an OUTPUT
+  Serial.println(&quot;Lab 1: Hello, GPIO!&quot;);
+}
+
+void loop() {
+  digitalWrite(LED_PIN, HIGH); // 3.3 V on the pin -&gt; LED ON
+  Serial.println(&quot;LED ON&quot;);
+  delay(500);                  // wait 500 ms (the CPU does nothing else!)
+
+  digitalWrite(LED_PIN, LOW);  // 0 V on the pin -&gt; LED OFF
+  Serial.println(&quot;LED OFF&quot;);
+  delay(500);
+}</pre></div>
+<div class="try"><h4>Try this</h4><ol>
+<li>Make the LED blink twice as fast. Which numbers did you change?</li>
+<li>Blink <b>SOS</b> in Morse code (&middot;&middot;&middot; &mdash;&mdash;&mdash; &middot;&middot;&middot;).</li>
+<li>Now make the <b>green</b> LED on GPIO 27 blink every 130 ms <i>while</i> red blinks every 500 ms. Why is this painful with <code>delay()</code>?</li>
+</ol></div>
+<details><summary>Solution to 3 &mdash; the millis() pattern</summary><div class="codebox"><div class="bar"><b>solution_millis.ino</b><button class="btn small" data-copy="code3">Copy</button></div><pre id="code3" data-hl>// Lab 1 - Try-this solution: two LEDs at two different rates WITHOUT delay()
+// Red LED on GPIO 26 toggles every 500 ms, green LED on GPIO 27 every 130 ms.
+
+const int RED_PIN = 26;
+const int GREEN_PIN = 27;
+
+unsigned long lastRed = 0, lastGreen = 0;   // time of the last toggle
+bool redOn = false, greenOn = false;
+
+void setup() {
+  pinMode(RED_PIN, OUTPUT);
+  pinMode(GREEN_PIN, OUTPUT);
+}
+
+void loop() {
+  unsigned long now = millis();             // ms since the board started
+
+  if (now - lastRed &gt;= 500) {               // is it time to toggle red?
+    lastRed = now;
+    redOn = !redOn;
+    digitalWrite(RED_PIN, redOn);
+  }
+  if (now - lastGreen &gt;= 130) {             // is it time to toggle green?
+    lastGreen = now;
+    greenOn = !greenOn;
+    digitalWrite(GREEN_PIN, greenOn);
+  }
+  // loop() never blocks, so the CPU is free to do other work here
+}</pre></div>
+<p><b>Big idea:</b> instead of <i>waiting</i>, remember <i>when</i> you last acted and check the clock. The loop stays free &mdash; this is cooperative multitasking.</p></details>
+</section><section class="lab " id="lab2">
+<span class="pill">Session 2 &middot; 20 min</span><h2 style="margin-top:8px">Lab 2: Buttons &amp; Interrupts</h2><p class="lead">Read an input with a pull-up, compare polling with an interrupt, and tame switch bounce.</p>
+<h3>Circuit</h3>
+<table><tr><th>Part</th><th>Part pin</th><th>ESP32 pin</th></tr><tr><td>Push-button</td><td>1.l (left leg 1)</td><td><code>GPIO 4</code></td></tr><tr><td>Push-button</td><td>2.l (left leg 2)</td><td><code>GND</code></td></tr><tr><td>LED + 220 &Omega;</td><td>A / C</td><td><code>GPIO 26 / GND</code></td></tr></table>
+<div class="note">With <code>INPUT_PULLUP</code> the pin rests at <b>HIGH</b> through an internal resistor, and the button pulls it <b>LOW</b>. So &ldquo;pressed&rdquo; = LOW, and the interrupt fires on the <b>FALLING</b> edge.</div>
+
+<div class="card" style="margin:14px 0">
+  <div id="wk-lab2"></div>
+  <details><summary>No link yet? Build the project yourself in 1 minute</summary>
+  <ol class="steps">
+    <li>Open <a href="https://wokwi.com/projects/new/esp32" target="_blank" rel="noopener">wokwi.com/projects/new/esp32</a> (a blank ESP32 project).</li>
+    <li>Click the <b>diagram.json</b> tab, select all, and paste the <b>diagram.json</b> below. The parts and wires appear.</li>
+    <li>Click the <b>sketch.ino</b> tab, select all, and paste the sketch.</li>
+    
+    <li>Press the green <b>&#9654; Start</b> button. Output appears in the Serial Monitor at the bottom.</li>
+  </ol>
+  <div class="codebox"><div class="bar"><b>diagram.json</b><button class="btn small" data-copy="code4">Copy</button></div><pre id="code4" data-hl>{
+  &quot;version&quot;: 1,
+  &quot;author&quot;: &quot;Dr. Sathisha R N - NAVKIS Embedded Systems Workshop&quot;,
+  &quot;editor&quot;: &quot;wokwi&quot;,
+  &quot;parts&quot;: [
+    {
+      &quot;type&quot;: &quot;board-esp32-devkit-c-v4&quot;,
+      &quot;id&quot;: &quot;esp&quot;,
+      &quot;top&quot;: 0,
+      &quot;left&quot;: 0,
+      &quot;attrs&quot;: {}
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-resistor&quot;,
+      &quot;id&quot;: &quot;r1&quot;,
+      &quot;top&quot;: 28,
+      &quot;left&quot;: 140,
+      &quot;rotate&quot;: 0,
+      &quot;attrs&quot;: {
+        &quot;value&quot;: &quot;220&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-led&quot;,
+      &quot;id&quot;: &quot;led1&quot;,
+      &quot;top&quot;: -40,
+      &quot;left&quot;: 230,
+      &quot;attrs&quot;: {
+        &quot;color&quot;: &quot;red&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-pushbutton&quot;,
+      &quot;id&quot;: &quot;btn1&quot;,
+      &quot;top&quot;: 120,
+      &quot;left&quot;: 200,
+      &quot;attrs&quot;: {
+        &quot;color&quot;: &quot;green&quot;
+      }
+    }
+  ],
+  &quot;connections&quot;: [
+    [
+      &quot;esp:TX&quot;,
+      &quot;$serialMonitor:RX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:RX&quot;,
+      &quot;$serialMonitor:TX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:26&quot;,
+      &quot;r1:1&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;r1:2&quot;,
+      &quot;led1:A&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;led1:C&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;btn1:1.l&quot;,
+      &quot;esp:4&quot;,
+      &quot;blue&quot;,
+      []
+    ],
+    [
+      &quot;btn1:2.l&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ]
+  ],
+  &quot;dependencies&quot;: {}
+}</pre></div>
+  
+  </details>
+</div>
+<div class="codebox"><div class="bar"><b>sketch.ino (interrupt version)</b><button class="btn small" data-copy="code5">Copy</button></div><pre id="code5" data-hl>// Lab 2 - Buttons &amp; Interrupts
+// Push-button on GPIO 4 (other leg to GND), LED on GPIO 26.
+// Every press toggles the LED and increments a counter - handled by an INTERRUPT.
+
+const int BUTTON_PIN = 4;
+const int LED_PIN = 26;
+
+volatile bool pressed = false;        // set inside the ISR, read in loop()
+volatile unsigned long lastIsrMs = 0; // for debouncing
+
+// Interrupt Service Routine: keep it SHORT. No Serial.print, no delay here.
+void IRAM_ATTR onButton() {
+  unsigned long now = millis();
+  if (now - lastIsrMs &gt; 200) {        // ignore contact bounce (&lt; 200 ms)
+    pressed = true;
+    lastIsrMs = now;
+  }
+}
+
+int count = 0;
+bool ledOn = false;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);  // internal pull-up: idle = HIGH, pressed = LOW
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), onButton, FALLING);
+  Serial.println(&quot;Lab 2: press the button!&quot;);
+}
+
+void loop() {
+  if (pressed) {                      // the ISR raised the flag
+    pressed = false;
+    count++;
+    ledOn = !ledOn;
+    digitalWrite(LED_PIN, ledOn);
+    Serial.printf(&quot;Press #%d -&gt; LED %s\n&quot;, count, ledOn ? &quot;ON&quot; : &quot;OFF&quot;);
+  }
+  // The CPU is free here - e.g. blink something else, read sensors...
+}</pre></div>
+<details><summary>Polling version, for comparison</summary><div class="codebox"><div class="bar"><b>polling.ino</b><button class="btn small" data-copy="code6">Copy</button></div><pre id="code6" data-hl>// Lab 2 - Polling version (for comparison). Same wiring as the interrupt version.
+const int BUTTON_PIN = 4;
+const int LED_PIN = 26;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+}
+
+void loop() {
+  int state = digitalRead(BUTTON_PIN);     // ask the pin, again and again...
+  digitalWrite(LED_PIN, state == LOW);     // LED on while the button is held
+  delay(10);
+}</pre></div></details>
+<div class="try"><h4>Try this</h4><ol>
+<li>Change the debounce window from 200 ms to 0. Click quickly &mdash; do you ever see a press counted twice? That is <b>contact bounce</b>.</li>
+<li>Why must <code>pressed</code> be <code>volatile</code>? (Hint: who else changes it?)</li>
+<li>Add <code>delay(3000)</code> at the end of <code>loop()</code> in <i>both</i> versions. Press the button during the delay. Which version still notices the press?</li>
+<li>Count only <b>long presses</b> (held &gt; 1 s). <span class="pill deep">Deep dive</span></li>
+</ol></div>
+<details><summary>Answers</summary><ol>
+<li>Real switches &ldquo;chatter&rdquo; for a few milliseconds, creating several edges. The time window ignores them.</li>
+<li>It is changed inside the ISR, outside the normal flow of <code>loop()</code>. <code>volatile</code> stops the compiler from caching it in a register.</li>
+<li>The interrupt version: the ISR sets the flag even while <code>loop()</code> sleeps, and the press is handled once the delay ends. The polling version misses it completely.</li>
+<li>Attach the interrupt on <code>CHANGE</code>, store the press time on LOW and compare on HIGH; or poll and time with <code>millis()</code>.</li></ol></details>
+</section><section class="lab " id="lab3">
+<span class="pill">Session 2 &middot; 20 min</span><h2 style="margin-top:8px">Lab 3: The Analog World: ADC &amp; PWM</h2><p class="lead">Turn a voltage into a number with the 12-bit ADC, and turn a number back into &lsquo;analog&rsquo; brightness with PWM.</p>
+<h3>Circuit</h3>
+<table><tr><th>Part</th><th>Part pin</th><th>ESP32 pin</th></tr><tr><td>Potentiometer</td><td>VCC / GND</td><td><code>3V3 / GND</code></td></tr><tr><td>Potentiometer</td><td>SIG (wiper)</td><td><code>GPIO 34</code></td></tr><tr><td>LED + 220 &Omega;</td><td>A / C</td><td><code>GPIO 26 / GND</code></td></tr><tr><td>LDR module (Try-this)</td><td>AO</td><td><code>GPIO 35</code></td></tr></table>
+
+<div class="card" style="margin:14px 0">
+  <div id="wk-lab3"></div>
+  <details><summary>No link yet? Build the project yourself in 1 minute</summary>
+  <ol class="steps">
+    <li>Open <a href="https://wokwi.com/projects/new/esp32" target="_blank" rel="noopener">wokwi.com/projects/new/esp32</a> (a blank ESP32 project).</li>
+    <li>Click the <b>diagram.json</b> tab, select all, and paste the <b>diagram.json</b> below. The parts and wires appear.</li>
+    <li>Click the <b>sketch.ino</b> tab, select all, and paste the sketch.</li>
+    
+    <li>Press the green <b>&#9654; Start</b> button. Output appears in the Serial Monitor at the bottom.</li>
+  </ol>
+  <div class="codebox"><div class="bar"><b>diagram.json</b><button class="btn small" data-copy="code7">Copy</button></div><pre id="code7" data-hl>{
+  &quot;version&quot;: 1,
+  &quot;author&quot;: &quot;Dr. Sathisha R N - NAVKIS Embedded Systems Workshop&quot;,
+  &quot;editor&quot;: &quot;wokwi&quot;,
+  &quot;parts&quot;: [
+    {
+      &quot;type&quot;: &quot;board-esp32-devkit-c-v4&quot;,
+      &quot;id&quot;: &quot;esp&quot;,
+      &quot;top&quot;: 0,
+      &quot;left&quot;: 0,
+      &quot;attrs&quot;: {}
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-resistor&quot;,
+      &quot;id&quot;: &quot;r1&quot;,
+      &quot;top&quot;: 28,
+      &quot;left&quot;: 140,
+      &quot;rotate&quot;: 0,
+      &quot;attrs&quot;: {
+        &quot;value&quot;: &quot;220&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-led&quot;,
+      &quot;id&quot;: &quot;led1&quot;,
+      &quot;top&quot;: -40,
+      &quot;left&quot;: 230,
+      &quot;attrs&quot;: {
+        &quot;color&quot;: &quot;yellow&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-potentiometer&quot;,
+      &quot;id&quot;: &quot;pot1&quot;,
+      &quot;top&quot;: -80,
+      &quot;left&quot;: -180,
+      &quot;attrs&quot;: {}
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-photoresistor-sensor&quot;,
+      &quot;id&quot;: &quot;ldr1&quot;,
+      &quot;top&quot;: 160,
+      &quot;left&quot;: -260,
+      &quot;attrs&quot;: {}
+    }
+  ],
+  &quot;connections&quot;: [
+    [
+      &quot;esp:TX&quot;,
+      &quot;$serialMonitor:RX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:RX&quot;,
+      &quot;$serialMonitor:TX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:26&quot;,
+      &quot;r1:1&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;r1:2&quot;,
+      &quot;led1:A&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;led1:C&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;pot1:VCC&quot;,
+      &quot;esp:3V3&quot;,
+      &quot;red&quot;,
+      []
+    ],
+    [
+      &quot;pot1:GND&quot;,
+      &quot;esp:GND.1&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;pot1:SIG&quot;,
+      &quot;esp:34&quot;,
+      &quot;blue&quot;,
+      []
+    ],
+    [
+      &quot;ldr1:VCC&quot;,
+      &quot;esp:3V3&quot;,
+      &quot;red&quot;,
+      []
+    ],
+    [
+      &quot;ldr1:GND&quot;,
+      &quot;esp:GND.1&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;ldr1:AO&quot;,
+      &quot;esp:35&quot;,
+      &quot;violet&quot;,
+      []
+    ]
+  ],
+  &quot;dependencies&quot;: {}
+}</pre></div>
+  
+  </details>
+</div>
+<div class="codebox"><div class="bar"><b>sketch.ino</b><button class="btn small" data-copy="code8">Copy</button></div><pre id="code8" data-hl>// Lab 3 - The Analog World: ADC in, PWM out
+// Potentiometer wiper -&gt; GPIO 34 (ADC1), LED on GPIO 26 dimmed with PWM.
+// Open the Serial Plotter style output: each line prints &quot;raw volts duty&quot;.
+
+const int POT_PIN = 34;   // ADC1 channel (input-only pin)
+const int LED_PIN = 26;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED_PIN, OUTPUT);
+  analogReadResolution(12);           // 12-bit ADC: 0 ... 4095
+}
+
+void loop() {
+  int raw = analogRead(POT_PIN);              // 0 ... 4095
+  float volts = raw * 3.3 / 4095.0;           // convert to voltage
+  int duty = map(raw, 0, 4095, 0, 255);       // scale to 8-bit PWM duty
+  analogWrite(LED_PIN, duty);                 // PWM: brightness follows the knob
+
+  Serial.printf(&quot;raw:%d volts:%.2f duty:%d\n&quot;, raw, volts, duty);
+  delay(100);
+}</pre></div>
+<div class="note">Click the potentiometer in the simulation and drag its knob. To see a live graph, open the <b>Serial Plotter</b> (in Wokwi, choose it from the menu of the Serial Monitor).</div>
+<div class="try"><h4>Try this</h4><ol>
+<li>At what knob position is <code>raw</code> about 2048? What voltage is that?</li>
+<li>One ADC step = 3.3 V / 4096 = ? mV. This is the <b>resolution</b>.</li>
+<li>Our eyes are not linear. Try <code>duty = (long)duty * duty / 255;</code> &mdash; does the dimming feel smoother?</li>
+<li><b>Night lamp:</b> the board already has an LDR module on GPIO 35. Click it to change the light level. Switch the LED on only when it is dark.</li>
+</ol></div>
+<details><summary>Answers and night-lamp solution</summary><ol><li>Mid-way; about 1.65 V.</li><li>About 0.8 mV.</li><li>Yes: squaring makes the low end finer (a crude &lsquo;gamma correction&rsquo;).</li></ol>
+<div class="codebox"><div class="bar"><b>solution_nightlamp.ino</b><button class="btn small" data-copy="code9">Copy</button></div><pre id="code9" data-hl>// Lab 3 - Try-this solution: automatic night lamp
+// LDR module AO -&gt; GPIO 35. In Wokwi the AO value RISES when it gets darker.
+const int LDR_PIN = 35;
+const int LED_PIN = 26;
+int DARK_THRESHOLD = 2000;   // calibrate: watch the printed values, then choose
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED_PIN, OUTPUT);
+}
+
+void loop() {
+  int light = analogRead(LDR_PIN);
+  bool dark = light &gt; DARK_THRESHOLD;
+  digitalWrite(LED_PIN, dark);
+  Serial.printf(&quot;ldr:%d lamp:%s\n&quot;, light, dark ? &quot;ON&quot; : &quot;OFF&quot;);
+  delay(200);
+}</pre></div></details>
+</section><section class="lab " id="lab4">
+<span class="pill">Session 3 &middot; 25 min</span><h2 style="margin-top:8px">Lab 4: Sensor + Display over I&sup2;C</h2><p class="lead">Read a digital temperature/humidity sensor and draw on an OLED that shares a two-wire I&sup2;C bus.</p>
+<h3>Circuit</h3>
+<table><tr><th>Part</th><th>Part pin</th><th>ESP32 pin</th></tr><tr><td>DHT22 sensor</td><td>VCC / GND</td><td><code>3V3 / GND</code></td></tr><tr><td>DHT22 sensor</td><td>SDA (data)</td><td><code>GPIO 15</code></td></tr><tr><td>SSD1306 OLED 128&times;64</td><td>VCC / GND</td><td><code>3V3 / GND</code></td></tr><tr><td>SSD1306 OLED</td><td>SDA / SCL</td><td><code>GPIO 21 / GPIO 22</code></td></tr><tr><td>Alarm LED + 220 &Omega;</td><td>A / C</td><td><code>GPIO 26 / GND</code></td></tr></table>
+
+<div class="card" style="margin:14px 0">
+  <div id="wk-lab4"></div>
+  <details><summary>No link yet? Build the project yourself in 1 minute</summary>
+  <ol class="steps">
+    <li>Open <a href="https://wokwi.com/projects/new/esp32" target="_blank" rel="noopener">wokwi.com/projects/new/esp32</a> (a blank ESP32 project).</li>
+    <li>Click the <b>diagram.json</b> tab, select all, and paste the <b>diagram.json</b> below. The parts and wires appear.</li>
+    <li>Click the <b>sketch.ino</b> tab, select all, and paste the sketch.</li>
+    <li>Open the <b>Library Manager</b> tab (book icon) &rarr; <b>+</b> and add: <code>Adafruit SSD1306</code>, <code>Adafruit GFX Library</code>, <code>DHT sensor library for ESPx</code>. <i>Or</i> create a file named <code>libraries.txt</code> and paste the list below.</li>
+    <li>Press the green <b>&#9654; Start</b> button. Output appears in the Serial Monitor at the bottom.</li>
+  </ol>
+  <div class="codebox"><div class="bar"><b>diagram.json</b><button class="btn small" data-copy="code10">Copy</button></div><pre id="code10" data-hl>{
+  &quot;version&quot;: 1,
+  &quot;author&quot;: &quot;Dr. Sathisha R N - NAVKIS Embedded Systems Workshop&quot;,
+  &quot;editor&quot;: &quot;wokwi&quot;,
+  &quot;parts&quot;: [
+    {
+      &quot;type&quot;: &quot;board-esp32-devkit-c-v4&quot;,
+      &quot;id&quot;: &quot;esp&quot;,
+      &quot;top&quot;: 0,
+      &quot;left&quot;: 0,
+      &quot;attrs&quot;: {}
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-resistor&quot;,
+      &quot;id&quot;: &quot;r1&quot;,
+      &quot;top&quot;: 28,
+      &quot;left&quot;: 170,
+      &quot;rotate&quot;: 0,
+      &quot;attrs&quot;: {
+        &quot;value&quot;: &quot;220&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-led&quot;,
+      &quot;id&quot;: &quot;led1&quot;,
+      &quot;top&quot;: -40,
+      &quot;left&quot;: 260,
+      &quot;attrs&quot;: {
+        &quot;color&quot;: &quot;red&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-dht22&quot;,
+      &quot;id&quot;: &quot;dht1&quot;,
+      &quot;top&quot;: -110,
+      &quot;left&quot;: -130,
+      &quot;attrs&quot;: {
+        &quot;temperature&quot;: &quot;28&quot;,
+        &quot;humidity&quot;: &quot;60&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;board-ssd1306&quot;,
+      &quot;id&quot;: &quot;oled1&quot;,
+      &quot;top&quot;: 120,
+      &quot;left&quot;: 220,
+      &quot;attrs&quot;: {
+        &quot;i2cAddress&quot;: &quot;0x3c&quot;
+      }
+    }
+  ],
+  &quot;connections&quot;: [
+    [
+      &quot;esp:TX&quot;,
+      &quot;$serialMonitor:RX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:RX&quot;,
+      &quot;$serialMonitor:TX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:26&quot;,
+      &quot;r1:1&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;r1:2&quot;,
+      &quot;led1:A&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;led1:C&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;dht1:VCC&quot;,
+      &quot;esp:3V3&quot;,
+      &quot;red&quot;,
+      []
+    ],
+    [
+      &quot;dht1:GND&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;dht1:SDA&quot;,
+      &quot;esp:15&quot;,
+      &quot;green&quot;,
+      []
+    ],
+    [
+      &quot;oled1:VCC&quot;,
+      &quot;esp:3V3&quot;,
+      &quot;red&quot;,
+      []
+    ],
+    [
+      &quot;oled1:GND&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;oled1:SDA&quot;,
+      &quot;esp:21&quot;,
+      &quot;blue&quot;,
+      []
+    ],
+    [
+      &quot;oled1:SCL&quot;,
+      &quot;esp:22&quot;,
+      &quot;purple&quot;,
+      []
+    ]
+  ],
+  &quot;dependencies&quot;: {}
+}</pre></div>
+  <div class="codebox"><div class="bar"><b>libraries.txt</b><button class="btn small" data-copy="code11">Copy</button></div><pre id="code11" data-hl># Wokwi Library List
+Adafruit SSD1306
+Adafruit GFX Library
+DHT sensor library for ESPx</pre></div>
+  </details>
+</div>
+<div class="codebox"><div class="bar"><b>sketch.ino</b><button class="btn small" data-copy="code12">Copy</button></div><pre id="code12" data-hl>// Lab 4 - Sensor + Display over I2C
+// DHT22 data -&gt; GPIO 15, SSD1306 OLED on I2C (SDA = GPIO 21, SCL = GPIO 22),
+// alarm LED on GPIO 26 switches on above TEMP_ALARM.
+#include &lt;Wire.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;
+#include &quot;DHTesp.h&quot;
+
+const int DHT_PIN = 15;
+const int LED_PIN = 26;
+const float TEMP_ALARM = 35.0;      // degrees C
+
+Adafruit_SSD1306 oled(128, 64, &amp;Wire, -1);
+DHTesp dht;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED_PIN, OUTPUT);
+  dht.setup(DHT_PIN, DHTesp::DHT22);
+
+  if (!oled.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {   // 0x3C = OLED I2C address
+    Serial.println(&quot;OLED not found - check SDA/SCL wiring&quot;);
+    while (true) delay(10);
+  }
+  oled.clearDisplay();
+  oled.setTextColor(SSD1306_WHITE);
+}
+
+void loop() {
+  TempAndHumidity d = dht.getTempAndHumidity();
+  if (dht.getStatus() != 0) {
+    Serial.println(&quot;DHT error: &quot; + String(dht.getStatusString()));
+    delay(2000);
+    return;
+  }
+  bool alarm = d.temperature &gt; TEMP_ALARM;
+  digitalWrite(LED_PIN, alarm);
+
+  Serial.printf(&quot;temp:%.1f hum:%.1f alarm:%d\n&quot;, d.temperature, d.humidity, alarm);
+
+  oled.clearDisplay();
+  oled.setTextSize(1);
+  oled.setCursor(0, 0);
+  oled.println(&quot;NAVKIS Weather Node&quot;);
+  oled.setTextSize(2);
+  oled.setCursor(0, 18);
+  oled.printf(&quot;%.1f C\n&quot;, d.temperature);
+  oled.printf(&quot;%.0f %%RH&quot;, d.humidity);
+  if (alarm) {
+    oled.setTextSize(1);
+    oled.setCursor(0, 56);
+    oled.print(&quot;!! HIGH TEMPERATURE !!&quot;);
+  }
+  oled.display();
+  delay(2000);                        // DHT22 can be read at most every 2 s
+}</pre></div>
+<div class="note warn">The DHT22&rsquo;s pin is labelled SDA in Wokwi, but it is <b>not</b> I&sup2;C &mdash; it uses its own single-wire timing protocol. Only the OLED is on the I&sup2;C bus here.</div>
+<div class="try"><h4>Try this</h4><ol>
+<li>Click the DHT22 while the simulation runs and drag the temperature above 35 &deg;C. What happens?</li>
+<li>Show the temperature in &deg;F as well. (F = C &times; 9/5 + 32)</li>
+<li>Draw a simple bar for humidity with <code>oled.fillRect(x, y, w, h, SSD1306_WHITE)</code>.</li>
+<li>Add <b>hysteresis</b>: alarm ON above 35 &deg;C, OFF only below 33 &deg;C. Why do real thermostats do this? <span class="pill deep">Deep dive</span></li>
+</ol></div>
+</section><section class="lab " id="lab5">
+<span class="pill">Session 3 &middot; 30 min</span><h2 style="margin-top:8px">Lab 5: Your ESP32 on the Internet (MQTT)</h2><p class="lead">Join Wi-Fi, publish sensor data to an MQTT broker, and switch your LED from the class dashboard on the projector.</p>
+<h3>Circuit</h3>
+<table><tr><th>Part</th><th>Part pin</th><th>ESP32 pin</th></tr><tr><td>DHT22 sensor</td><td>VCC / SDA / GND</td><td><code>3V3 / GPIO 15 / GND</code></td></tr><tr><td>LED + 220 &Omega;</td><td>A / C</td><td><code>GPIO 26 / GND</code></td></tr></table>
+<div class="note ok"><b>Step 0:</b> in the sketch, change <code>STUDENT = "your-name"</code> to your name or USN (letters and numbers only, no spaces). That becomes your tile on the class dashboard.</div>
+
+<div class="card" style="margin:14px 0">
+  <div id="wk-lab5"></div>
+  <details><summary>No link yet? Build the project yourself in 1 minute</summary>
+  <ol class="steps">
+    <li>Open <a href="https://wokwi.com/projects/new/esp32" target="_blank" rel="noopener">wokwi.com/projects/new/esp32</a> (a blank ESP32 project).</li>
+    <li>Click the <b>diagram.json</b> tab, select all, and paste the <b>diagram.json</b> below. The parts and wires appear.</li>
+    <li>Click the <b>sketch.ino</b> tab, select all, and paste the sketch.</li>
+    <li>Open the <b>Library Manager</b> tab (book icon) &rarr; <b>+</b> and add: <code>PubSubClient</code>, <code>DHT sensor library for ESPx</code>. <i>Or</i> create a file named <code>libraries.txt</code> and paste the list below.</li>
+    <li>Press the green <b>&#9654; Start</b> button. Output appears in the Serial Monitor at the bottom.</li>
+  </ol>
+  <div class="codebox"><div class="bar"><b>diagram.json</b><button class="btn small" data-copy="code13">Copy</button></div><pre id="code13" data-hl>{
+  &quot;version&quot;: 1,
+  &quot;author&quot;: &quot;Dr. Sathisha R N - NAVKIS Embedded Systems Workshop&quot;,
+  &quot;editor&quot;: &quot;wokwi&quot;,
+  &quot;parts&quot;: [
+    {
+      &quot;type&quot;: &quot;board-esp32-devkit-c-v4&quot;,
+      &quot;id&quot;: &quot;esp&quot;,
+      &quot;top&quot;: 0,
+      &quot;left&quot;: 0,
+      &quot;attrs&quot;: {}
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-resistor&quot;,
+      &quot;id&quot;: &quot;r1&quot;,
+      &quot;top&quot;: 28,
+      &quot;left&quot;: 140,
+      &quot;rotate&quot;: 0,
+      &quot;attrs&quot;: {
+        &quot;value&quot;: &quot;220&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-led&quot;,
+      &quot;id&quot;: &quot;led1&quot;,
+      &quot;top&quot;: -40,
+      &quot;left&quot;: 230,
+      &quot;attrs&quot;: {
+        &quot;color&quot;: &quot;blue&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-dht22&quot;,
+      &quot;id&quot;: &quot;dht1&quot;,
+      &quot;top&quot;: -110,
+      &quot;left&quot;: -130,
+      &quot;attrs&quot;: {
+        &quot;temperature&quot;: &quot;28&quot;,
+        &quot;humidity&quot;: &quot;60&quot;
+      }
+    }
+  ],
+  &quot;connections&quot;: [
+    [
+      &quot;esp:TX&quot;,
+      &quot;$serialMonitor:RX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:RX&quot;,
+      &quot;$serialMonitor:TX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:26&quot;,
+      &quot;r1:1&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;r1:2&quot;,
+      &quot;led1:A&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;led1:C&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;dht1:VCC&quot;,
+      &quot;esp:3V3&quot;,
+      &quot;red&quot;,
+      []
+    ],
+    [
+      &quot;dht1:GND&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;dht1:SDA&quot;,
+      &quot;esp:15&quot;,
+      &quot;green&quot;,
+      []
+    ]
+  ],
+  &quot;dependencies&quot;: {}
+}</pre></div>
+  <div class="codebox"><div class="bar"><b>libraries.txt</b><button class="btn small" data-copy="code14">Copy</button></div><pre id="code14" data-hl># Wokwi Library List
+PubSubClient
+DHT sensor library for ESPx</pre></div>
+  </details>
+</div>
+<div class="codebox"><div class="bar"><b>sketch.ino</b><button class="btn small" data-copy="code15">Copy</button></div><pre id="code15" data-hl>// Lab 5 - Your ESP32 on the Internet (MQTT)
+// DHT22 -&gt; GPIO 15, LED -&gt; GPIO 26. Joins Wokwi&#x27;s virtual Wi-Fi, publishes
+// readings every 5 s, and listens for ON/OFF commands from the class dashboard.
+#include &lt;WiFi.h&gt;
+#include &lt;PubSubClient.h&gt;
+#include &quot;DHTesp.h&quot;
+
+// ======= CHANGE THIS: your name or USN (letters/numbers only, no spaces) =======
+const char* STUDENT = &quot;your-name&quot;;
+// ===============================================================================
+
+const char* MQTT_BROKER = &quot;broker.hivemq.com&quot;;   // free public broker
+const int   MQTT_PORT   = 1883;
+const char* TOPIC_ROOT  = &quot;navkis/ews2026&quot;;      // must match the dashboard
+
+const int DHT_PIN = 15;
+const int LED_PIN = 26;
+
+WiFiClient net;
+PubSubClient mqtt(net);
+DHTesp dht;
+String dataTopic, ledTopic;
+unsigned long lastSend = 0;
+
+// Called whenever a message arrives on a topic we subscribed to
+void onMessage(char* topic, byte* payload, unsigned int length) {
+  String msg;
+  for (unsigned int i = 0; i &lt; length; i++) msg += (char)payload[i];
+  Serial.printf(&quot;Message on %s: %s\n&quot;, topic, msg.c_str());
+  if (msg == &quot;ON&quot;)  digitalWrite(LED_PIN, HIGH);
+  if (msg == &quot;OFF&quot;) digitalWrite(LED_PIN, LOW);
+}
+
+void connectWiFi() {
+  Serial.print(&quot;Connecting to Wi-Fi&quot;);
+  WiFi.begin(&quot;Wokwi-GUEST&quot;, &quot;&quot;, 6);       // open network, channel 6
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(100);
+    Serial.print(&quot;.&quot;);
+  }
+  Serial.print(&quot; connected! IP = &quot;);
+  Serial.println(WiFi.localIP());
+}
+
+void connectMQTT() {
+  while (!mqtt.connected()) {
+    String clientId = &quot;navkis-&quot; + String(STUDENT) + &quot;-&quot; + String(random(0xffff), HEX);
+    Serial.print(&quot;Connecting to MQTT broker... &quot;);
+    if (mqtt.connect(clientId.c_str())) {
+      Serial.println(&quot;connected!&quot;);
+      mqtt.subscribe(ledTopic.c_str());
+      Serial.println(&quot;Listening on &quot; + ledTopic);
+    } else {
+      Serial.printf(&quot;failed (state %d), retrying in 2 s\n&quot;, mqtt.state());
+      delay(2000);
+    }
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(LED_PIN, OUTPUT);
+  dht.setup(DHT_PIN, DHTesp::DHT22);
+  randomSeed(micros());
+
+  dataTopic = String(TOPIC_ROOT) + &quot;/&quot; + STUDENT + &quot;/data&quot;;
+  ledTopic  = String(TOPIC_ROOT) + &quot;/&quot; + STUDENT + &quot;/led&quot;;
+
+  connectWiFi();
+  mqtt.setServer(MQTT_BROKER, MQTT_PORT);
+  mqtt.setCallback(onMessage);
+}
+
+void loop() {
+  if (!mqtt.connected()) connectMQTT();
+  mqtt.loop();                            // handle incoming messages
+
+  if (millis() - lastSend &gt; 5000) {       // publish every 5 seconds
+    lastSend = millis();
+    TempAndHumidity d = dht.getTempAndHumidity();
+    char json[96];
+    snprintf(json, sizeof(json), &quot;{\&quot;t\&quot;:%.1f,\&quot;h\&quot;:%.1f,\&quot;led\&quot;:%d}&quot;,
+             d.temperature, d.humidity, digitalRead(LED_PIN));
+    mqtt.publish(dataTopic.c_str(), json);
+    Serial.printf(&quot;Published to %s: %s\n&quot;, dataTopic.c_str(), json);
+  }
+}</pre></div>
+<h3>What is happening?</h3>
+<ol class="steps">
+<li>Wokwi provides a virtual access point, <code>Wokwi-GUEST</code> (no password), connected to the real Internet.</li>
+<li>Your ESP32 opens a TCP connection to the public broker <code>broker.hivemq.com</code> on port 1883.</li>
+<li>Every 5 s it <b>publishes</b> a small JSON message to <code>navkis/ews2026/&lt;your-name&gt;/data</code>.</li>
+<li>It <b>subscribes</b> to <code>navkis/ews2026/&lt;your-name&gt;/led</code>. When anyone publishes <code>ON</code> or <code>OFF</code> there, your LED obeys.</li>
+<li>The <a href="dashboard.html">Live Dashboard</a> subscribes to <code>navkis/ews2026/#</code> and shows everyone at once.</li>
+</ol>
+<div class="note warn">A public broker is like a public notice board: anyone can read your topic. Never send passwords or personal data this way. Real products use TLS and a username and password.</div>
+<div class="try"><h4>Try this</h4><ol>
+<li>Open the <a href="dashboard.html">Live Dashboard</a> on your own phone and switch your LED.</li>
+<li>Change the publish interval to 2 s. What would happen to a battery-powered sensor if it sent data every 2 s?</li>
+<li>Add a field <code>"rssi"</code> using <code>WiFi.RSSI()</code> to the JSON.</li>
+<li>Make the LED blink when the temperature is above 35 &deg;C &mdash; a local rule that keeps working even if the Internet goes down (<b>edge computing</b>).</li>
+</ol></div>
+</section><section class="lab " id="lab6">
+<span class="pill">Bonus &middot; fast finishers</span><h2 style="margin-top:8px">Lab 6: Multitasking with FreeRTOS</h2><p class="lead">Run three tasks side by side, pass data through a queue, and connect it to scheduling in your OS course.</p>
+<span class="pill deep">Deep dive</span>
+<h3>Circuit</h3><p>Same as Lab 3: potentiometer on GPIO 34, LED on GPIO 26.</p>
+
+<div class="card" style="margin:14px 0">
+  <div id="wk-lab6"></div>
+  <details><summary>No link yet? Build the project yourself in 1 minute</summary>
+  <ol class="steps">
+    <li>Open <a href="https://wokwi.com/projects/new/esp32" target="_blank" rel="noopener">wokwi.com/projects/new/esp32</a> (a blank ESP32 project).</li>
+    <li>Click the <b>diagram.json</b> tab, select all, and paste the <b>diagram.json</b> below. The parts and wires appear.</li>
+    <li>Click the <b>sketch.ino</b> tab, select all, and paste the sketch.</li>
+    
+    <li>Press the green <b>&#9654; Start</b> button. Output appears in the Serial Monitor at the bottom.</li>
+  </ol>
+  <div class="codebox"><div class="bar"><b>diagram.json</b><button class="btn small" data-copy="code16">Copy</button></div><pre id="code16" data-hl>{
+  &quot;version&quot;: 1,
+  &quot;author&quot;: &quot;Dr. Sathisha R N - NAVKIS Embedded Systems Workshop&quot;,
+  &quot;editor&quot;: &quot;wokwi&quot;,
+  &quot;parts&quot;: [
+    {
+      &quot;type&quot;: &quot;board-esp32-devkit-c-v4&quot;,
+      &quot;id&quot;: &quot;esp&quot;,
+      &quot;top&quot;: 0,
+      &quot;left&quot;: 0,
+      &quot;attrs&quot;: {}
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-resistor&quot;,
+      &quot;id&quot;: &quot;r1&quot;,
+      &quot;top&quot;: 28,
+      &quot;left&quot;: 140,
+      &quot;rotate&quot;: 0,
+      &quot;attrs&quot;: {
+        &quot;value&quot;: &quot;220&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-led&quot;,
+      &quot;id&quot;: &quot;led1&quot;,
+      &quot;top&quot;: -40,
+      &quot;left&quot;: 230,
+      &quot;attrs&quot;: {
+        &quot;color&quot;: &quot;green&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-potentiometer&quot;,
+      &quot;id&quot;: &quot;pot1&quot;,
+      &quot;top&quot;: -80,
+      &quot;left&quot;: -180,
+      &quot;attrs&quot;: {}
+    }
+  ],
+  &quot;connections&quot;: [
+    [
+      &quot;esp:TX&quot;,
+      &quot;$serialMonitor:RX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:RX&quot;,
+      &quot;$serialMonitor:TX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:26&quot;,
+      &quot;r1:1&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;r1:2&quot;,
+      &quot;led1:A&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;led1:C&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;pot1:VCC&quot;,
+      &quot;esp:3V3&quot;,
+      &quot;red&quot;,
+      []
+    ],
+    [
+      &quot;pot1:GND&quot;,
+      &quot;esp:GND.1&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;pot1:SIG&quot;,
+      &quot;esp:34&quot;,
+      &quot;blue&quot;,
+      []
+    ]
+  ],
+  &quot;dependencies&quot;: {}
+}</pre></div>
+  
+  </details>
+</div>
+<div class="codebox"><div class="bar"><b>sketch.ino</b><button class="btn small" data-copy="code17">Copy</button></div><pre id="code17" data-hl>// Lab 6 (Deep dive) - Real-time multitasking with FreeRTOS
+// Three independent tasks share one CPU, like processes in your OS course:
+//   blinkTask  - toggles the LED on GPIO 26 every 250 ms
+//   sensorTask - reads the potentiometer (GPIO 34) and sends values to a QUEUE
+//   printTask  - waits on the queue and prints whatever arrives
+// Potentiometer wiper -&gt; GPIO 34, LED -&gt; GPIO 26 (same wiring as Lab 3).
+
+const int LED_PIN = 26;
+const int POT_PIN = 34;
+
+QueueHandle_t potQueue;               // FIFO between sensorTask and printTask
+
+void blinkTask(void* param) {
+  pinMode(LED_PIN, OUTPUT);
+  while (true) {
+    digitalWrite(LED_PIN, !digitalRead(LED_PIN));
+    vTaskDelay(pdMS_TO_TICKS(250));   // sleep this task; others keep running
+  }
+}
+
+void sensorTask(void* param) {
+  while (true) {
+    int value = analogRead(POT_PIN);
+    xQueueSend(potQueue, &amp;value, 0);  // drop the sample if the queue is full
+    vTaskDelay(pdMS_TO_TICKS(500));
+  }
+}
+
+void printTask(void* param) {
+  int value;
+  while (true) {
+    if (xQueueReceive(potQueue, &amp;value, portMAX_DELAY)) {  // block until data
+      Serial.printf(&quot;[core %d] pot = %d\n&quot;, xPortGetCoreID(), value);
+    }
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  potQueue = xQueueCreate(10, sizeof(int));   // holds up to 10 ints
+
+  //                       function    name      stack  param prio handle
+  xTaskCreate(blinkTask,  &quot;blink&quot;,   2048,  NULL, 1,   NULL);
+  xTaskCreate(sensorTask, &quot;sensor&quot;,  2048,  NULL, 2,   NULL);
+  xTaskCreate(printTask,  &quot;print&quot;,   4096,  NULL, 1,   NULL);
+}
+
+void loop() {
+  vTaskDelay(pdMS_TO_TICKS(1000));    // loop() is itself just another task
+}</pre></div>
+<div class="try"><h4>Try this</h4><ol>
+<li>Replace <code>vTaskDelay</code> in <code>blinkTask</code> with a busy loop: <code>for(volatile long i=0;i&lt;5000000;i++);</code> and give the task priority 3. What happens to the printing? This is <b>starvation</b>.</li>
+<li>Pin <code>printTask</code> to core 0 with <code>xTaskCreatePinnedToCore(printTask,"print",4096,NULL,1,NULL,0)</code>. Check the core number printed.</li>
+<li>Producer&ndash;consumer, semaphores, priorities, deadlock: which OS-course topics did you just use?</li>
+</ol></div>
+</section><section class="lab " id="challenge">
+<span class="pill">2:45 – 3:25 &middot; teams of 2–3</span><h2 style="margin-top:8px">Challenge: Mini-challenge: Smart Street Light</h2><p class="lead">Save energy on a street: dim at night, full brightness only when someone passes, off in daylight.</p>
+<h3>The rules</h3>
+<table><tr><th>Condition</th><th>Lamp</th></tr>
+<tr><td>Daylight</td><td>OFF</td></tr>
+<tr><td>Night, nobody around</td><td>DIM (about 20 %)</td></tr>
+<tr><td>Night and motion</td><td>FULL for 5 s after the last motion</td></tr></table>
+<h3>Circuit (already wired in the starter)</h3>
+<table><tr><th>Part</th><th>Part pin</th><th>ESP32 pin</th></tr><tr><td>LDR module</td><td>AO</td><td><code>GPIO 35</code></td></tr><tr><td>PIR motion sensor</td><td>OUT (VCC to 5V)</td><td><code>GPIO 27</code></td></tr><tr><td>Lamp LED + 220 &Omega;</td><td>A / C</td><td><code>GPIO 26 / GND</code></td></tr></table>
+
+<div class="card" style="margin:14px 0">
+  <div id="wk-challenge"></div>
+  <details><summary>No link yet? Build the project yourself in 1 minute</summary>
+  <ol class="steps">
+    <li>Open <a href="https://wokwi.com/projects/new/esp32" target="_blank" rel="noopener">wokwi.com/projects/new/esp32</a> (a blank ESP32 project).</li>
+    <li>Click the <b>diagram.json</b> tab, select all, and paste the <b>diagram.json</b> below. The parts and wires appear.</li>
+    <li>Click the <b>sketch.ino</b> tab, select all, and paste the sketch.</li>
+    
+    <li>Press the green <b>&#9654; Start</b> button. Output appears in the Serial Monitor at the bottom.</li>
+  </ol>
+  <div class="codebox"><div class="bar"><b>diagram.json</b><button class="btn small" data-copy="code18">Copy</button></div><pre id="code18" data-hl>{
+  &quot;version&quot;: 1,
+  &quot;author&quot;: &quot;Dr. Sathisha R N - NAVKIS Embedded Systems Workshop&quot;,
+  &quot;editor&quot;: &quot;wokwi&quot;,
+  &quot;parts&quot;: [
+    {
+      &quot;type&quot;: &quot;board-esp32-devkit-c-v4&quot;,
+      &quot;id&quot;: &quot;esp&quot;,
+      &quot;top&quot;: 0,
+      &quot;left&quot;: 0,
+      &quot;attrs&quot;: {}
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-resistor&quot;,
+      &quot;id&quot;: &quot;r1&quot;,
+      &quot;top&quot;: 28,
+      &quot;left&quot;: 140,
+      &quot;rotate&quot;: 0,
+      &quot;attrs&quot;: {
+        &quot;value&quot;: &quot;220&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-led&quot;,
+      &quot;id&quot;: &quot;lamp&quot;,
+      &quot;top&quot;: -40,
+      &quot;left&quot;: 230,
+      &quot;attrs&quot;: {
+        &quot;color&quot;: &quot;white&quot;
+      }
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-photoresistor-sensor&quot;,
+      &quot;id&quot;: &quot;ldr1&quot;,
+      &quot;top&quot;: 160,
+      &quot;left&quot;: -260,
+      &quot;attrs&quot;: {}
+    },
+    {
+      &quot;type&quot;: &quot;wokwi-pir-motion-sensor&quot;,
+      &quot;id&quot;: &quot;pir1&quot;,
+      &quot;top&quot;: -130,
+      &quot;left&quot;: -150,
+      &quot;attrs&quot;: {}
+    }
+  ],
+  &quot;connections&quot;: [
+    [
+      &quot;esp:TX&quot;,
+      &quot;$serialMonitor:RX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:RX&quot;,
+      &quot;$serialMonitor:TX&quot;,
+      &quot;&quot;,
+      []
+    ],
+    [
+      &quot;esp:26&quot;,
+      &quot;r1:1&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;r1:2&quot;,
+      &quot;lamp:A&quot;,
+      &quot;orange&quot;,
+      []
+    ],
+    [
+      &quot;lamp:C&quot;,
+      &quot;esp:GND.2&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;ldr1:VCC&quot;,
+      &quot;esp:3V3&quot;,
+      &quot;red&quot;,
+      []
+    ],
+    [
+      &quot;ldr1:GND&quot;,
+      &quot;esp:GND.1&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;ldr1:AO&quot;,
+      &quot;esp:35&quot;,
+      &quot;violet&quot;,
+      []
+    ],
+    [
+      &quot;pir1:VCC&quot;,
+      &quot;esp:5V&quot;,
+      &quot;red&quot;,
+      []
+    ],
+    [
+      &quot;pir1:GND&quot;,
+      &quot;esp:GND.1&quot;,
+      &quot;black&quot;,
+      []
+    ],
+    [
+      &quot;pir1:OUT&quot;,
+      &quot;esp:27&quot;,
+      &quot;orange&quot;,
+      []
+    ]
+  ],
+  &quot;dependencies&quot;: {}
+}</pre></div>
+  
+  </details>
+</div>
+<div class="codebox"><div class="bar"><b>sketch.ino (starter)</b><button class="btn small" data-copy="code19">Copy</button></div><pre id="code19" data-hl>// Mini-challenge - Smart Street Light (starter)
+// Parts already wired: LDR module AO -&gt; GPIO 35, PIR motion sensor OUT -&gt; GPIO 27,
+// street-light LED -&gt; GPIO 26.
+//
+// Rules for your street light:
+//   1. Daytime (bright)                -&gt; lamp OFF
+//   2. Night, nobody around            -&gt; lamp DIM (about 20 % brightness)
+//   3. Night AND motion detected       -&gt; lamp FULL brightness for 5 s after the last motion
+// Bonus: print the state changes (&quot;DAY&quot;, &quot;NIGHT-DIM&quot;, &quot;NIGHT-FULL&quot;) only when they change.
+// Super-bonus: publish the state to MQTT (reuse your Lab 5 code).
+
+const int LDR_PIN = 35;
+const int PIR_PIN = 27;
+const int LAMP_PIN = 26;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(PIR_PIN, INPUT);
+  pinMode(LAMP_PIN, OUTPUT);
+  Serial.println(&quot;Smart Street Light - starter&quot;);
+}
+
+void loop() {
+  int light = analogRead(LDR_PIN);     // higher value = darker (in Wokwi)
+  int motion = digitalRead(PIR_PIN);   // HIGH when motion is detected
+
+  Serial.printf(&quot;ldr:%d motion:%d\n&quot;, light, motion);
+
+  // TODO: decide DAY / NIGHT using a threshold you calibrate
+  // TODO: use millis() to keep the lamp at full brightness for 5 s after motion
+  // TODO: analogWrite(LAMP_PIN, 0 / 50 / 255) for OFF / DIM / FULL
+
+  delay(200);
+}</pre></div>
+<div class="note">In Wokwi, click the PIR sensor and press <b>Simulate motion</b>. Click the LDR to change the light level.</div>
+<h3>Scoring (demo to the instructor)</h3>
+<ul><li><b>3 points</b> &mdash; OFF in the day and ON at night</li><li><b>+3</b> &mdash; DIM vs FULL with motion</li><li><b>+2</b> &mdash; 5-second hold using <code>millis()</code>, with no <code>delay()</code> blocking</li><li><b>+2</b> &mdash; prints the state only when it changes</li><li><b>+3 bonus</b> &mdash; publishes the state to the class dashboard (reuse Lab 5)</li></ul>
+<details><summary>Reference solution (instructor will reveal at 3:20)</summary><div class="codebox"><div class="bar"><b>solution.ino</b><button class="btn small" data-copy="code20">Copy</button></div><pre id="code20" data-hl>// Mini-challenge - Smart Street Light (reference solution)
+const int LDR_PIN = 35;
+const int PIR_PIN = 27;
+const int LAMP_PIN = 26;
+const int DARK_THRESHOLD = 2000;      // calibrate from the printed ldr values
+const unsigned long HOLD_MS = 5000;
+
+unsigned long lastMotion = 0;
+String lastState = &quot;&quot;;
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(PIR_PIN, INPUT);
+  pinMode(LAMP_PIN, OUTPUT);
+}
+
+void loop() {
+  bool dark = analogRead(LDR_PIN) &gt; DARK_THRESHOLD;
+  if (digitalRead(PIR_PIN) == HIGH) lastMotion = millis();
+  bool recentMotion = (lastMotion != 0) &amp;&amp; (millis() - lastMotion &lt; HOLD_MS);
+
+  String state;
+  if (!dark)             { analogWrite(LAMP_PIN, 0);   state = &quot;DAY&quot;; }
+  else if (recentMotion) { analogWrite(LAMP_PIN, 255); state = &quot;NIGHT-FULL&quot;; }
+  else                   { analogWrite(LAMP_PIN, 50);  state = &quot;NIGHT-DIM&quot;; }
+
+  if (state != lastState) {           // print only on change
+    Serial.println(state);
+    lastState = state;
+  }
+  delay(50);
+}</pre></div></details>
+</section></main><script>
+document.addEventListener('DOMContentLoaded',()=>{
+  const show=k=>{document.querySelectorAll('.lab').forEach(s=>s.classList.toggle('on',s.id===k));
+    document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.lab===k));};
+  document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{show(b.dataset.lab);history.replaceState(null,'','#'+b.dataset.lab);scrollTo(0,0);});
+  if(location.hash&&document.getElementById(location.hash.slice(1)))show(location.hash.slice(1));
+  addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(document.getElementById(k))show(k);});
+  for(const k in WS.wokwi){const el=document.getElementById('wk-'+k);if(!el)continue;const u=WS.wokwi[k];
+    el.innerHTML=u?`<a class="btn" href="${u}" target="_blank" rel="noopener">&#9654; Open this lab in Wokwi</a> <span style="color:var(--mute);font-size:14px">&nbsp;Runs in your browser. To keep your changes, sign in and choose <b>Save a copy</b>.</span>`
+      :`<p style="margin:0 0 6px"><b>Set up the simulation:</b> follow the 1-minute steps below.</p>`;
+    if(!u){const d=el.parentElement.querySelector('details');if(d)d.open=true;}}
+});</script><footer><div class="wrap">From Code to Silicon &middot; Embedded Systems Workshop &middot; Dept. of CSE, NAVKIS College of Engineering, Hassan &middot; 25 Nov 2026<br>
+Resource person: Dr. Sathisha R N, Siddaganga Institute of Technology, Tumakuru &middot; Simulations run on <a href="https://wokwi.com" target="_blank" rel="noopener">Wokwi</a>.</div></footer>
+</body></html>

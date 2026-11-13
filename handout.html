@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Handout — From Code to Silicon</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>&#x1F50C;</text></svg>">
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/config.js"></script>
+<script src="assets/vendor/qrcode.js"></script>
+<script src="assets/common.js"></script>
+<style>@media print{.page{page-break-after:always}h2{margin-top:14px}body{font-size:12px}table{font-size:11px}}</style></head><body>
+<header id="topbar"></header>
+
+<main class="wrap">
+<div class="noprint" style="margin:20px 0"><button class="btn" onclick="print()">&#x1F5A8; Print / Save as PDF</button></div>
+<section class="page">
+<div class="kicker">Student handout &middot; Dept. of CSE, NAVKIS College of Engineering, Hassan &middot; 25 Nov 2026</div>
+<h1 style="font-size:34px">From Code to Silicon: <span style="color:var(--amber)">Blink. Sense. Connect.</span></h1>
+<p>Resource person: <b>Dr. Sathisha R N</b>, Assistant Professor, Dept. of ETE, Siddaganga Institute of Technology, Tumakuru</p>
+<div style="display:flex;gap:24px;align-items:center;flex-wrap:wrap"><div class="qr" data-qr="index.html"></div>
+<div><b>Workshop site:</b> scan the code &mdash; slides, labs, dashboard and quiz.<br><b>Simulator:</b> wokwi.com &rarr; New project &rarr; ESP32<br><b>Wi-Fi in the simulator:</b> SSID <code>Wokwi-GUEST</code>, no password</div></div>
+<h2>Schedule</h2><table><tr><th>Time</th><th>Session</th><th>What happens</th></tr><tr><td style='white-space:nowrap'>10:30 – 11:30</td><td><b>Session 1 — Embedded systems for software engineers</b></td><td style='color:var(--mute)'>What lives inside a microcontroller, the ESP32 tour, how your C code reaches silicon, first live blink in Wokwi</td></tr><tr class="brk"><td>11:30 – 11:45</td><td colspan="2">Tea break</td></tr><tr><td style='white-space:nowrap'>11:45 – 1:00</td><td><b>Session 2 — Hands-on: talking to pins</b></td><td style='color:var(--mute)'>Lab 1 GPIO &amp; millis(), Lab 2 buttons &amp; interrupts, Lab 3 ADC &amp; PWM</td></tr><tr class="brk"><td>1:00 – 1:45</td><td colspan="2">Lunch break</td></tr><tr><td style='white-space:nowrap'>1:45 – 2:45</td><td><b>Session 3 — Hands-on: sensors, displays &amp; the Internet</b></td><td style='color:var(--mute)'>Lab 4 I²C sensor + OLED, Lab 5 MQTT IoT node on the live class dashboard</td></tr><tr><td style='white-space:nowrap'>2:45 – 3:25</td><td><b>Mini-challenge — Smart Street Light</b></td><td style='color:var(--mute)'>Teams of 2–3 build and demo; Lab 6 FreeRTOS for fast finishers</td></tr><tr><td style='white-space:nowrap'>3:25 – 3:45</td><td><b>Beyond the superloop</b></td><td style='color:var(--mute)'>RTOS in 10 minutes, how products are really built, careers &amp; a learning roadmap</td></tr><tr><td style='white-space:nowrap'>3:45 – 4:00</td><td><b>Quiz, feedback &amp; close</b></td><td style='color:var(--mute)'>15-question quiz on your phone</td></tr></table>
+<h2>ESP32 DevKitC pins used today</h2>
+<table><tr><th>Pin</th><th>Used for</th><th>Notes</th></tr>
+<tr><td><code>GPIO 26, 27</code></td><td>LEDs (output, PWM)</td><td>Any free GPIO can do PWM on the ESP32</td></tr>
+<tr><td><code>GPIO 4</code></td><td>Push-button (input)</td><td><code>INPUT_PULLUP</code>: pressed = LOW</td></tr>
+<tr><td><code>GPIO 34, 35</code></td><td>Potentiometer, LDR (ADC1)</td><td>Input-only pins, 12-bit: 0&ndash;4095 for 0&ndash;3.3 V</td></tr>
+<tr><td><code>GPIO 15</code></td><td>DHT22 data</td><td>Single-wire protocol, read at most every 2 s</td></tr>
+<tr><td><code>GPIO 21 / 22</code></td><td>I&sup2;C SDA / SCL</td><td>OLED address <code>0x3C</code></td></tr>
+<tr><td><code>3V3, 5V, GND</code></td><td>Power</td><td>ESP32 I/O is 3.3 V &mdash; never feed 5 V into a GPIO</td></tr>
+<tr><td><code>GPIO 6&ndash;11</code></td><td>&mdash;</td><td>Do not use: wired to the on-board flash</td></tr></table>
+</section>
+<section class="page">
+<h2>Cheat sheet</h2>
+<table><tr><th>Function</th><th>What it does</th></tr>
+<tr><td><code>pinMode(pin, OUTPUT | INPUT | INPUT_PULLUP)</code></td><td>Configure a pin</td></tr>
+<tr><td><code>digitalWrite(pin, HIGH | LOW)</code> / <code>digitalRead(pin)</code></td><td>Write / read a digital level</td></tr>
+<tr><td><code>analogRead(pin)</code></td><td>ADC reading, 0&ndash;4095</td></tr>
+<tr><td><code>analogWrite(pin, 0..255)</code></td><td>PWM duty cycle (brightness, motor speed)</td></tr>
+<tr><td><code>millis()</code></td><td>Milliseconds since boot &mdash; use for non-blocking timing</td></tr>
+<tr><td><code>attachInterrupt(digitalPinToInterrupt(p), isr, FALLING)</code></td><td>Call <code>isr</code> on an edge. Keep ISRs short, mark them <code>IRAM_ATTR</code>, share flags as <code>volatile</code></td></tr>
+<tr><td><code>map(x, inLo, inHi, outLo, outHi)</code></td><td>Rescale a number</td></tr>
+<tr><td><code>Serial.begin(115200)</code>, <code>Serial.printf(...)</code></td><td>Debug output to the Serial Monitor</td></tr>
+<tr><td><code>xTaskCreate(fn, "name", stack, arg, prio, &amp;h)</code>, <code>vTaskDelay(pdMS_TO_TICKS(ms))</code></td><td>FreeRTOS task and a non-blocking sleep</td></tr>
+<tr><td><code>mqtt.publish(topic, msg)</code>, <code>mqtt.subscribe(topic)</code>, <code>mqtt.loop()</code></td><td>MQTT with PubSubClient</td></tr></table>
+<h2>Lab checklist</h2>
+<table><tr><th></th><th>Lab</th><th>I can&hellip;</th></tr>
+<tr><td>&#9744;</td><td>1 GPIO</td><td>blink two LEDs at different rates using <code>millis()</code></td></tr>
+<tr><td>&#9744;</td><td>2 Interrupts</td><td>explain polling vs interrupt, and why bounce happens</td></tr>
+<tr><td>&#9744;</td><td>3 ADC/PWM</td><td>convert a reading to volts and dim an LED</td></tr>
+<tr><td>&#9744;</td><td>4 I&sup2;C</td><td>show sensor data on the OLED with an alarm</td></tr>
+<tr><td>&#9744;</td><td>5 MQTT</td><td>see my device on the class dashboard and switch my LED</td></tr>
+<tr><td>&#9744;</td><td>6 RTOS</td><td>run tasks that talk through a queue</td></tr>
+<tr><td>&#9744;</td><td>Challenge</td><td>build the smart street light</td></tr></table>
+<h2>After today: a 6-step roadmap</h2>
+<ol><li><b>Repeat the labs</b> in Wokwi at home &mdash; then change one thing in each.</li>
+<li><b>Get a real board</b>: an ESP32 DevKit, a breadboard and a sensor kit cost a few hundred rupees. Install the Arduino IDE with the ESP32 core.</li>
+<li><b>Sharpen your C</b>: pointers, <code>struct</code>, bit operations (<code>|= &amp;= ~ &lt;&lt;</code>), <code>volatile</code>.</li>
+<li><b>Go one level down</b>: ESP-IDF or STM32 HAL, reading datasheets and registers, and a logic analyser.</li>
+<li><b>Learn an RTOS</b> properly (FreeRTOS or Zephyr), then embedded Linux on a Raspberry Pi.</li>
+<li><b>Build and publish</b> one complete project on GitHub, with a README, circuit diagram and video. It is your best interview answer.</li></ol>
+<p style="color:var(--mute)">Free resources: Wokwi docs and examples &middot; Espressif ESP32 documentation &middot; FreeRTOS.org &ldquo;Mastering the FreeRTOS Real Time Kernel&rdquo; &middot; NPTEL courses on embedded systems.</p>
+</section></main><footer><div class="wrap">From Code to Silicon &middot; Embedded Systems Workshop &middot; Dept. of CSE, NAVKIS College of Engineering, Hassan &middot; 25 Nov 2026<br>
+Resource person: Dr. Sathisha R N, Siddaganga Institute of Technology, Tumakuru &middot; Simulations run on <a href="https://wokwi.com" target="_blank" rel="noopener">Wokwi</a>.</div></footer>
+</body></html>

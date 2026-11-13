@@ -1,0 +1,293 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Slides — From Code to Silicon</title><script src="assets/vendor/qrcode.js"></script><script src="assets/common.js"></script><style>
+:root{--bg:#0b1220;--card:#16213a;--line:#25335a;--ink:#e8eefc;--mute:#9fb0d3;--teal:#2ee6c5;--amber:#ffb547;--rose:#ff6b8a;--blue:#6aa8ff}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#05080f;overflow:hidden;font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif;color:var(--ink)}
+#stage{position:absolute;left:50%;top:50%;width:1280px;height:720px;transform-origin:center center}
+.slide{position:absolute;inset:0;padding:56px 72px;background:radial-gradient(800px 300px at 90% -10%,rgba(46,230,197,.10),transparent 60%),var(--bg);opacity:0;visibility:hidden;transition:opacity .45s,transform .45s;transform:translateX(40px)}
+.slide.on{opacity:1;visibility:visible;transform:none}.slide.prev{transform:translateX(-40px)}
+h2{font-size:44px;margin:0 0 26px;letter-spacing:-.5px}
+.kick{color:var(--amber);font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:16px;margin-bottom:8px}
+.slide p{font-size:22px;line-height:1.45}.slide .big{font-size:26px;line-height:1.45}.sub{color:var(--mute);font-size:22px}.center{text-align:center}
+.hl{color:var(--teal);font-weight:700}
+ul,ol{font-size:24px;line-height:1.5;padding-left:28px}li{margin:8px 0}
+code{font-family:ui-monospace,Consolas,monospace;background:rgba(255,255,255,.07);padding:1px 6px;border-radius:6px;font-size:.9em}
+.two{display:grid;grid-template-columns:1.25fr 1fr;gap:40px;align-items:start}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;font-size:20px;color:var(--mute)}.tile b{display:block;color:var(--ink);font-size:23px;margin-bottom:6px}
+.labbox{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--teal);border-radius:16px;padding:24px}
+.lbl{color:var(--amber);font-weight:800;font-size:14px;letter-spacing:1.5px;text-transform:uppercase}.url{font-family:ui-monospace,Consolas,monospace;font-size:26px;color:var(--teal)}
+table{border-collapse:collapse;width:100%;font-size:22px}th,td{padding:11px 14px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--amber)}
+.agenda td:first-child{font-family:ui-monospace,Consolas,monospace;color:var(--teal);width:110px}.agenda tr.brk td{color:var(--mute);font-style:italic}
+.tagp{display:inline-block;background:rgba(46,230,197,.15);color:var(--teal);border-radius:999px;padding:2px 12px;font-size:16px;font-weight:700;margin-left:8px}.tagp.deep{background:rgba(255,107,138,.15);color:var(--rose)}
+pre.code{background:#070d1a;border:1px solid var(--line);border-radius:14px;padding:18px 20px;font-size:19px;line-height:1.5;margin:0;font-family:ui-monospace,Consolas,monospace}
+pre .c{color:#6f86b5;font-style:italic}pre .k{color:#ff9ac1}pre .f{color:#8ab4ff}
+.diag{width:100%;height:auto}.diag .bx{fill:#111a2e;stroke:#25335a;stroke-width:2}.diag .hlb{stroke:#2ee6c5}.diag .t1{fill:#e8eefc;font-size:26px;font-weight:800;text-anchor:middle}.diag .t2{fill:#9fb0d3;font-size:18px;text-anchor:middle}.diag text[text-anchor=start]{text-anchor:start}.diag text[text-anchor=end]{text-anchor:end}.diag .ln{stroke:#9fb0d3;stroke-width:2.5;fill:none}
+.icons{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;text-align:center;font-size:21px;font-weight:700}.icons span{display:block;font-size:56px}.icons small{display:block;color:var(--mute);font-weight:400;font-size:15px;margin-top:4px}
+.rules{margin-top:22px;background:rgba(255,107,138,.10);border:1px solid var(--rose);border-radius:14px;padding:14px 18px;font-size:20px}
+.slide .cta{font-size:24px;background:rgba(255,181,71,.12);border:1px solid var(--amber);border-radius:14px;padding:12px 16px}
+.flow{display:flex;gap:10px;margin:30px 0}.flow div{flex:1;background:var(--card);border:1px solid var(--line);border-top:4px solid var(--teal);border-radius:14px;padding:16px;font-size:20px}.flow b{display:block}.flow small{color:var(--mute);font-size:15px}
+.road{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:40px}.road div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:30px 22px 30px 80px;position:relative;font-size:26px;min-height:150px}.road span{position:absolute;left:20px;top:30px;width:40px;height:40px;border-radius:50%;background:var(--teal);color:#05221c;font-weight:900;display:grid;place-items:center}.road small{display:block;color:var(--mute);font-size:19px;margin-top:6px}
+.section{display:flex;flex-direction:column;justify-content:center;background:radial-gradient(900px 400px at 20% 50%,rgba(46,230,197,.14),transparent 60%),var(--bg)}
+.secno{font-size:120px;font-weight:900;color:transparent;-webkit-text-stroke:2px var(--teal);line-height:1}.sect{font-size:68px;margin:10px 0}
+.title-wrap{position:absolute;left:80px;top:110px;width:760px}.hero{font-size:92px;line-height:1;margin:14px 0}.grad{background:linear-gradient(90deg,var(--teal),var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent}
+.slide .tag{font-size:34px;color:var(--amber);font-weight:800;margin:0 0 40px}.byline{font-size:21px;color:var(--mute);line-height:1.5}.byline b{color:var(--ink)}.date{margin-top:22px;font-size:20px;color:var(--teal);font-weight:700}
+.chipart{position:absolute;right:70px;top:170px;width:380px}.pulse{animation:pulse 1.6s infinite}@keyframes pulse{50%{opacity:.2}}
+.glow{filter:drop-shadow(0 0 10px #ff6b8a);animation:pulse 1s infinite}
+.qrbox{background:#fff;border-radius:12px;padding:10px;display:inline-block;line-height:0}.qrbox svg{width:190px;height:190px}
+.frag{opacity:0;transform:translateY(12px);transition:opacity .4s,transform .4s}.frag.vis{opacity:1;transform:none}
+.slide.on .wave{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 2.2s forwards}@keyframes draw{to{stroke-dashoffset:0}}
+#bar{position:fixed;left:0;bottom:0;height:4px;background:var(--teal);transition:width .3s;z-index:5}
+#num{position:fixed;right:16px;bottom:10px;color:#56658a;font-size:13px;z-index:5;font-family:ui-monospace,monospace}
+#notes{position:fixed;left:0;right:0;bottom:0;max-height:34vh;overflow:auto;background:rgba(5,8,15,.96);border-top:2px solid var(--amber);padding:14px 22px;font-size:17px;color:#dfe7fb;display:none;z-index:6}#notes b{color:var(--amber)}
+#help{position:fixed;left:16px;bottom:10px;color:#56658a;font-size:13px;z-index:5}
+</style></head><body><div id="stage"><section class="slide title" data-notes="Welcome. Introduce yourself briefly. Ask: how many of you have programmed an Arduino or ESP32 before? (Show of hands.) Today&#x27;s promise: by 4 PM every one of you will have made a microcontroller blink, sense and talk to the Internet, without touching a single wire."><div class="title-wrap"><div class="kick">Embedded Systems Workshop &middot; Dept. of CSE, NAVKIS College of Engineering, Hassan</div>
+<h1 class="hero">From Code to <span class="grad">Silicon</span></h1>
+<p class="tag">Blink. Sense. Connect.</p>
+<div class="byline"><b>Dr. Sathisha R N</b><br>Assistant Professor, Dept. of Electronics &amp; Telecommunication Engineering<br>Siddaganga Institute of Technology, Tumakuru</div>
+<div class="date">Wednesday, 25 November 2026</div></div>
+<svg class="chipart" viewBox="0 0 300 300"><g fill="none" stroke="#2ee6c5" stroke-width="3" opacity=".9">
+<rect x="80" y="80" width="140" height="140" rx="12"/><rect x="110" y="110" width="80" height="80" rx="6" stroke="#ffb547"/>
+<line x1="100" y1="80" x2="100" y2="45"/><line x1="100" y1="220" x2="100" y2="255"/><line x1="80" y1="100" x2="45" y2="100"/><line x1="220" y1="100" x2="255" y2="100"/><line x1="120" y1="80" x2="120" y2="45"/><line x1="120" y1="220" x2="120" y2="255"/><line x1="80" y1="120" x2="45" y2="120"/><line x1="220" y1="120" x2="255" y2="120"/><line x1="140" y1="80" x2="140" y2="45"/><line x1="140" y1="220" x2="140" y2="255"/><line x1="80" y1="140" x2="45" y2="140"/><line x1="220" y1="140" x2="255" y2="140"/><line x1="160" y1="80" x2="160" y2="45"/><line x1="160" y1="220" x2="160" y2="255"/><line x1="80" y1="160" x2="45" y2="160"/><line x1="220" y1="160" x2="255" y2="160"/><line x1="180" y1="80" x2="180" y2="45"/><line x1="180" y1="220" x2="180" y2="255"/><line x1="80" y1="180" x2="45" y2="180"/><line x1="220" y1="180" x2="255" y2="180"/><line x1="200" y1="80" x2="200" y2="45"/><line x1="200" y1="220" x2="200" y2="255"/><line x1="80" y1="200" x2="45" y2="200"/><line x1="220" y1="200" x2="255" y2="200"/></g>
+<circle class="pulse" cx="150" cy="150" r="10" fill="#ffb547"/></svg></section><section class="slide " data-notes="Keep this to under a minute. The point of mentioning the farm irrigation project is that embedded systems solve real, local problems."><h2>Who am I?</h2><div class="two"><ul class="frag-list">
+<li class="frag">Assistant Professor, Dept. of ETE, <b>Siddaganga Institute of Technology</b>, Tumakuru (since 2007)</li>
+<li class="frag">PhD, <b>IISc Bengaluru</b> &mdash; Optical Wireless Communication (data over beams of light)</li>
+<li class="frag">VTU Research Supervisor</li>
+<li class="frag">I build things with sensors, microcontrollers and radios &mdash; from lab test-beds to IoT drip irrigation on a farm</li></ul>
+<div class="labbox"><div class="lbl">Contact</div><div class="url" style="font-size:22px">satisharyan@gmail.com</div><div class="lbl" style="margin-top:18px">Slides, labs &amp; quiz</div><div class="qrbox" data-qr="index.html"></div></div></div></section><section class="slide " data-notes="Point out that two thirds of the day is hands-on. Lab 6 (FreeRTOS) is a bonus for fast finishers."><h2>Today&rsquo;s plan</h2><table class="agenda">
+<tr><td>10:30</td><td><b>Session 1</b> &mdash; Embedded systems for software engineers</td></tr>
+<tr class="brk"><td>11:30</td><td>Tea</td></tr>
+<tr><td>11:45</td><td><b>Session 2</b> &mdash; Hands-on: GPIO &middot; interrupts &middot; ADC/PWM <span class="tagp">Labs 1&ndash;3</span></td></tr>
+<tr class="brk"><td>1:00</td><td>Lunch</td></tr>
+<tr><td>1:45</td><td><b>Session 3</b> &mdash; Hands-on: I&sup2;C sensors &middot; IoT with MQTT <span class="tagp">Labs 4&ndash;5</span></td></tr>
+<tr><td>2:45</td><td><b>Mini-challenge</b> &mdash; Smart Street Light <span class="tagp">teams</span></td></tr>
+<tr><td>3:25</td><td><b>Beyond the superloop</b> &mdash; RTOS, real products, careers</td></tr>
+<tr><td>3:45</td><td>Quiz &amp; feedback</td></tr></table></section><section class="slide " data-notes="Get everyone to open wokwi.com and the workshop site now, while you talk. Check the room for blocked sites before Session 2."><h2>Your lab bench today</h2><div class="two"><div>
+<p class="big">No boards. No wires. No installs.</p>
+<ul class="frag-list"><li class="frag"><b>Wokwi</b> &mdash; a free ESP32 simulator in the browser. It runs the <i>real</i> compiled firmware, not an approximation.</li>
+<li class="frag">Virtual LEDs, buttons, sensors, OLED displays&hellip; and even <b>virtual Wi-Fi</b> with real Internet.</li>
+<li class="frag">Everything you learn runs unchanged on a real ESP32 board.</li></ul>
+<p class="frag cta">&#x1F449; Open <b>wokwi.com</b> now in Chrome or Edge</p></div>
+<div class="labbox"><div class="lbl">Workshop site</div><div class="qrbox" data-qr="index.html"></div><div style="color:var(--mute);margin-top:10px">Slides &middot; labs &middot; dashboard &middot; quiz</div></div></div></section><section class="slide section" data-notes=""><div class="secno">01</div><h1 class="sect">Embedded systems<br>for software engineers</h1><p class="sub">What changes when your code controls hardware?</p></section><section class="slide " data-notes="Ask: how many computers are in this room right now? Count the projector, the fan regulator, phones, the AC, the smart card in your ID... Microcontrollers ship in the billions every year, far more than PC processors."><h2>You are surrounded</h2><div class="icons">
+<div class="frag"><span>&#x1F697;</span>Car<br><small>dozens of controllers: engine, ABS, airbags</small></div>
+<div class="frag"><span>&#x1F4F1;</span>Phone<br><small>besides the CPU: power, touch, camera, radio</small></div>
+<div class="frag"><span>&#x1F9FA;</span>Washing machine<br><small>motor control, water level, a UI</small></div>
+<div class="frag"><span>&#x26A1;</span>Smart meter<br><small>measure, log, report</small></div>
+<div class="frag"><span>&#x1FA7A;</span>Pacemaker<br><small>hard real-time, years on one battery</small></div>
+<div class="frag"><span>&#x1F681;</span>Drone<br><small>flight control loop at hundreds of Hz</small></div></div>
+<p class="frag big center">Most computers in the world are not PCs &mdash; they are <span class="hl">hidden inside things</span>.</p></section><section class="slide " data-notes="The dashed line shows that the action changes the world, and the next measurement sees it. That is feedback: a thermostat, a drone, cruise control."><h2>What is an embedded system?</h2>
+<p class="big">A computer <span class="hl">dedicated to one job</span>, built into a larger product, that senses the world and acts on it &mdash; usually under limits of cost, power and time.</p>
+<svg viewBox="0 0 1000 260" class="diag">
+<defs><marker id="ar" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#9fb0d3"/></marker></defs>
+<g class="frag"><rect x="20" y="70" width="230" height="120" rx="16" class="bx"/><text x="135" y="122" class="t1">SENSE</text><text x="135" y="155" class="t2">temperature, light, button</text></g>
+<g class="frag"><line x1="255" y1="130" x2="370" y2="130" class="ln" marker-end="url(#ar)"/><rect x="380" y="50" width="240" height="160" rx="16" class="bx hlb"/><text x="500" y="118" class="t1">COMPUTE</text><text x="500" y="152" class="t2">your firmware</text><text x="500" y="180" class="t2">on a microcontroller</text></g>
+<g class="frag"><line x1="625" y1="130" x2="740" y2="130" class="ln" marker-end="url(#ar)"/><rect x="750" y="70" width="230" height="120" rx="16" class="bx"/><text x="865" y="122" class="t1">ACT</text><text x="865" y="155" class="t2">LED, motor, relay, radio</text></g>
+<path class="frag ln" d="M865,195 C865,255 135,255 135,195" fill="none" marker-end="url(#ar)" stroke-dasharray="6 6"/></svg>
+<p class="frag center sub">&hellip;and the loop runs forever: <code>while(1) { sense(); compute(); act(); }</code></p></section><section class="slide " data-notes="About 60,000 times less RAM. Every byte and every milliamp matters, which is why embedded C and C++ dominate. The power numbers are typical orders of magnitude, not exact."><h2>Your laptop vs. the ESP32</h2><table class="cmp">
+<tr><th></th><th>Typical laptop</th><th>ESP32 (today&rsquo;s chip)</th></tr>
+<tr class="frag"><td>CPU</td><td>4&ndash;16 cores, ~3 GHz</td><td>2 &times; Xtensa LX6 cores, up to <b>240 MHz</b></td></tr>
+<tr class="frag"><td>RAM</td><td>8&ndash;32 <b>GB</b></td><td><b>520 KB</b> SRAM</td></tr>
+<tr class="frag"><td>Storage</td><td>512 GB SSD</td><td>4 MB flash (on the DevKit module)</td></tr>
+<tr class="frag"><td>OS</td><td>Windows / Linux</td><td>none, or <b>FreeRTOS</b></td></tr>
+<tr class="frag"><td>Power</td><td>15&ndash;65 W</td><td>~0.1&ndash;0.5 W active, &micro;W in deep sleep</td></tr>
+<tr class="frag"><td>Built-in</td><td>&mdash;</td><td>Wi-Fi, Bluetooth, ADC, PWM, I&sup2;C, SPI, UART, touch</td></tr>
+<tr class="frag"><td>Cost</td><td>&#8377;50,000+</td><td>a few hundred rupees for a dev board</td></tr></table></section><section class="slide " data-notes="Ask the class which constraint matters most for each product from the earlier slide."><h2>Constraints shape everything</h2><div class="grid3">
+<div class="frag tile"><b>&#x1F9E0; Memory</b>KBs, not GBs. No careless <code>new</code> in loops.</div>
+<div class="frag tile"><b>&#x23F1; Time</b>A response that is correct but late is wrong (airbags!).</div>
+<div class="frag tile"><b>&#x1F50B; Power</b>Run for years on a coin cell: sleep, wake, sleep.</div>
+<div class="frag tile"><b>&#x1F4B0; Cost</b>Saving &#8377;10 &times; 1 million units = &#8377;1 crore.</div>
+<div class="frag tile"><b>&#x1F6E1; Reliability</b>No &ldquo;have you tried restarting?&rdquo; in a pacemaker. Watchdogs!</div>
+<div class="frag tile"><b>&#x1F576; No screen</b>Debug with an LED, the serial port, a logic analyser.</div></div></section><section class="slide " data-notes="Key idea for CS students: a peripheral is just memory-mapped registers. Writing a bit to an address turns on a pin. Everything else today is a friendly layer on top of that."><h2>Inside a microcontroller</h2>
+<svg viewBox="0 0 1000 420" class="diag">
+<rect x="250" y="20" width="500" height="380" rx="20" class="bx" stroke-width="3"/><text x="500" y="55" class="t1" fill="#ffb547">ESP32 SoC</text>
+<g class="frag"><rect x="290" y="80" width="190" height="80" rx="10" class="bx hlb"/><text x="385" y="115" class="t1">CPU &times;2</text><text x="385" y="142" class="t2">runs your code</text></g>
+<g class="frag"><rect x="520" y="80" width="190" height="80" rx="10" class="bx"/><text x="605" y="115" class="t1">Memory</text><text x="605" y="142" class="t2">flash + SRAM</text></g>
+<g class="frag"><rect x="290" y="185" width="420" height="44" rx="10" class="bx"/><text x="500" y="213" class="t2" style="font-size:16px">bus: each peripheral = <tspan fill="#2ee6c5">registers</tspan> at an address</text></g>
+<g class="frag"><rect x="290" y="250" width="96" height="60" rx="8" class="bx"/><text x="338" y="287" class="t2" style="font-size:18px">GPIO</text><rect x="398" y="250" width="96" height="60" rx="8" class="bx"/><text x="446" y="287" class="t2" style="font-size:18px">Timers</text><rect x="506" y="250" width="96" height="60" rx="8" class="bx"/><text x="554" y="287" class="t2" style="font-size:18px">ADC</text><rect x="614" y="250" width="96" height="60" rx="8" class="bx"/><text x="662" y="287" class="t2" style="font-size:18px">PWM</text></g>
+<g class="frag"><rect x="290" y="322" width="96" height="60" rx="8" class="bx"/><text x="338" y="359" class="t2" style="font-size:18px">UART</text><rect x="398" y="322" width="96" height="60" rx="8" class="bx"/><text x="446" y="359" class="t2" style="font-size:18px">I&#178;C</text><rect x="506" y="322" width="96" height="60" rx="8" class="bx"/><text x="554" y="359" class="t2" style="font-size:18px">SPI</text><rect x="614" y="322" width="96" height="60" rx="8" class="bx"/><text x="662" y="359" class="t2" style="font-size:18px">Wi-Fi/BT</text></g>
+<g class="frag"><text x="120" y="200" class="t2" style="font-size:20px">sensors &rarr;</text><text x="120" y="230" class="t2" style="font-size:20px">buttons &rarr;</text><text x="880" y="200" class="t2" style="font-size:20px">&rarr; LEDs</text><text x="880" y="230" class="t2" style="font-size:20px">&rarr; motors</text><text x="880" y="290" class="t2" style="font-size:20px">&rarr; cloud</text></g>
+<g class="frag"><rect x="260" y="235" width="22" height="22" rx="4" fill="#ff6b8a"/><text x="210" y="300" class="t2" style="font-size:16px" fill="#ff6b8a">interrupt</text><text x="210" y="320" class="t2" style="font-size:16px" fill="#ff6b8a">controller</text></g></svg></section><section class="slide " data-notes="This slide makes the workshop feel relevant to CSE students. Come back to it during Lab 6 (OS link) and Lab 5 (networks)."><h2>You already know more than you think</h2><table class="cmp">
+<tr><th>Your CSE course</th><th>Where it shows up in embedded</th></tr>
+<tr class="frag"><td>C / C++ programming</td><td>Firmware is written in it &mdash; pointers, bitwise ops, <code>volatile</code></td></tr>
+<tr class="frag"><td>Computer organisation</td><td>Registers, memory map, interrupts, the stack, caches</td></tr>
+<tr class="frag"><td>Operating systems</td><td>RTOS tasks, scheduling, priority, semaphores, queues</td></tr>
+<tr class="frag"><td>Data structures</td><td>Ring buffers for UART, queues between tasks, state machines</td></tr>
+<tr class="frag"><td>Computer networks</td><td>TCP/IP on Wi-Fi, MQTT pub/sub, TLS</td></tr>
+<tr class="frag"><td>Theory of computation</td><td>Finite state machines run traffic lights and vending machines</td></tr></table></section><section class="slide " data-notes="A common student question: where is main()? It is in the core library. Mention that on the ESP32, loop() runs as a FreeRTOS task on core 1."><h2>The Arduino &ldquo;superloop&rdquo;</h2><div class="two">
+<pre class="code"><span class="c">// what you write</span>
+<span class="k">void</span> <span class="f">setup</span>() {   <span class="c">// once, at power-on</span>
+  pinMode(26, OUTPUT);
+}
+<span class="k">void</span> <span class="f">loop</span>() {    <span class="c">// forever</span>
+  digitalWrite(26, HIGH);
+  delay(500);
+  digitalWrite(26, LOW);
+  delay(500);
+}</pre>
+<pre class="code frag"><span class="c">// what the framework hides</span>
+<span class="k">int</span> <span class="f">main</span>() {
+  initHardware();   <span class="c">// clocks, flash, RAM</span>
+  setup();
+  <span class="k">while</span> (<span class="k">true</span>) {
+    loop();
+  }
+}
+<span class="c">// On the ESP32, loop() actually runs
+// inside a FreeRTOS task (more later).</span></pre></div>
+<p class="frag center sub">There is no &ldquo;exit&rdquo;. Firmware never ends &mdash; it only resets.</p></section><section class="slide " data-notes="Cross-compilation is the key term. On a real board you&#x27;d click Upload in the Arduino IDE, and esptool writes the binary to flash over the USB-to-serial chip."><h2>From C++ to silicon: the toolchain</h2>
+<svg viewBox="0 0 1000 260" class="diag"><defs><marker id="ar2" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#9fb0d3"/></marker></defs>
+<g class="frag"><rect x="10" y="70" width="140" height="100" rx="12" class="bx"/><text x="80" y="115" class="t1" style="font-size:22px">sketch.ino</text><text x="80" y="145" class="t2" style="font-size:15px">your code</text><line x1=152 y1=120 x2=172 y2=120 class=ln marker-end=url(#ar2) /></g><g class="frag"><rect x="175" y="70" width="140" height="100" rx="12" class="bx"/><text x="245" y="115" class="t1" style="font-size:22px">C++ + libs</text><text x="245" y="145" class="t2" style="font-size:15px">preprocess</text><line x1=317 y1=120 x2=337 y2=120 class=ln marker-end=url(#ar2) /></g><g class="frag"><rect x="340" y="70" width="140" height="100" rx="12" class="bx"/><text x="410" y="115" class="t1" style="font-size:22px">xtensa-gcc</text><text x="410" y="145" class="t2" style="font-size:15px">cross-compile</text><line x1=482 y1=120 x2=502 y2=120 class=ln marker-end=url(#ar2) /></g><g class="frag"><rect x="505" y="70" width="140" height="100" rx="12" class="bx"/><text x="575" y="115" class="t1" style="font-size:22px">firmware.elf</text><text x="575" y="145" class="t2" style="font-size:15px">link + map</text><line x1=647 y1=120 x2=667 y2=120 class=ln marker-end=url(#ar2) /></g><g class="frag"><rect x="670" y="70" width="140" height="100" rx="12" class="bx"/><text x="740" y="115" class="t1" style="font-size:22px">.bin + esptool</text><text x="740" y="145" class="t2" style="font-size:15px">flash over USB</text><line x1=812 y1=120 x2=832 y2=120 class=ln marker-end=url(#ar2) /></g><g class="frag"><rect x="835" y="70" width="140" height="100" rx="12" class="bx hlb"/><text x="905" y="115" class="t1" style="font-size:22px">Silicon</text><text x="905" y="145" class="t2" style="font-size:15px">bootloader runs it</text></g>
+<g class="frag"><text x="500" y="222" class="t2" style="font-size:20px"><tspan fill="#2ee6c5" font-weight="700">Cross-compiling</tspan>: built on an x86 laptop, runs on an Xtensa CPU.</text><text x="500" y="252" class="t2" style="font-size:20px">Wokwi does all of this in the cloud when you press &#9654;.</text></g></svg></section><section class="slide " data-notes="Do this live on the projector, slowly. Most of the room should follow along. Then move into Session 2 after the tea break."><div class="kick">Live demo</div><h2>First blink, together</h2><div class="two"><ol class="frag-list">
+<li class="frag">wokwi.com &rarr; <b>New project</b> &rarr; <b>ESP32</b></li>
+<li class="frag">Look at the three tabs: <code>sketch.ino</code>, <code>diagram.json</code>, Library Manager</li>
+<li class="frag">Click <b>+</b> to add an LED and a resistor, then draw wires</li>
+<li class="frag">Press &#9654; &mdash; watch the Serial Monitor</li>
+<li class="frag">Change one number, run again. <i>That is the whole development loop.</i></li></ol>
+<div class="labbox"><div class="lbl">Tip</div><div style="font-size:20px">The <code>diagram.json</code> tab <i>is</i> the circuit. In the labs you just paste ours, so nobody loses time on wiring.</div></div></div></section><section class="slide section" data-notes=""><div class="secno">02</div><h1 class="sect">Talking to pins</h1><p class="sub">GPIO &middot; interrupts &middot; analog</p></section><section class="slide " data-notes="Ohm&#x27;s law is all the electronics needed today. Without the resistor, the LED tries to draw a large current, which can damage the pin or the LED."><h2>GPIO: a pin you control from code</h2><div class="two"><div>
+<ul class="frag-list"><li class="frag"><b>Output</b>: <code>digitalWrite(26, HIGH)</code> &rarr; pin at 3.3 V</li>
+<li class="frag"><b>Input</b>: <code>digitalRead(4)</code> &rarr; is the voltage high or low?</li>
+<li class="frag">Under the hood, it is one register write:</li></ul>
+<pre class="code frag"><span class="c">// friendly</span>
+digitalWrite(26, HIGH);
+<span class="c">// what it boils down to on the ESP32</span>
+GPIO.out_w1ts = (1 &lt;&lt; 26); <span class="c">// "write 1 to set"</span></pre>
+<p class="frag"><span class="tagp deep">Deep dive</span> &ldquo;w1ts&rdquo; registers set bits atomically, so you never need a read-modify-write.</p></div>
+<svg viewBox="0 0 420 380" class="diag"><text x="210" y="30" class="t2">LED on GPIO 26</text>
+<rect x="40" y="60" width="110" height="260" rx="10" class="bx"/><text x="95" y="195" class="t1" style="font-size:22px">ESP32</text>
+<circle cx="150" cy="110" r="6" fill="#2ee6c5"/><text x="120" y="100" class="t2" style="font-size:15px">26</text>
+<path d="M156,110 H200" class="ln"/><rect x="200" y="98" width="70" height="24" rx="4" fill="none" stroke="#ffb547" stroke-width="3"/><text x="235" y="90" class="t2" style="font-size:15px">220 &Omega;</text>
+<path d="M270,110 H320 V150" class="ln"/><polygon points="300,150 340,150 320,185" fill="#ff6b8a" class="glow"/><line x1="300" y1="187" x2="340" y2="187" stroke="#ff6b8a" stroke-width="3"/>
+<path d="M320,187 V280 H156" class="ln"/><circle cx="150" cy="280" r="6" fill="#9fb0d3"/><text x="118" y="300" class="t2" style="font-size:15px">GND</text>
+<text x="230" y="350" class="t2 frag" style="font-size:17px" fill="#2ee6c5">I = (3.3 &minus; 2.0) / 220 &asymp; 6 mA</text></svg></div></section><section class="slide " data-notes="This non-blocking pattern is the most important habit in embedded programming. Mention that millis() - last stays correct even when millis() overflows after 49 days, because of unsigned arithmetic."><h2>The problem with <code>delay()</code></h2><div class="two">
+<div><p class="big">While <code>delay(500)</code> runs, the CPU does <span class="hl">nothing</span>: no button checks, no sensor reads, no Wi-Fi.</p>
+<p class="frag">Two LEDs at different rates? Impossible to do cleanly with delays.</p>
+<p class="frag big">Fix: don&rsquo;t <i>wait</i> &mdash; <span class="hl">check the clock</span>.</p></div>
+<pre class="code frag"><span class="k">unsigned long</span> last = 0;
+
+<span class="k">void</span> <span class="f">loop</span>() {
+  <span class="k">if</span> (millis() - last &gt;= 500) {
+    last = millis();
+    toggleLed();
+  }
+  <span class="c">// free to do other work here!</span>
+  checkButton();
+  readSensor();
+}</pre></div></section><section class="slide " data-notes="Walk around. Common mistakes: forgetting to stop the simulation before editing, and pasting the diagram into the sketch tab."><div class="kick">Hands-on</div><h2>Lab 1: Hello, GPIO!</h2>
+<div class="two"><div><p class="big">Blink an LED, then blink two at different rates without <code>delay()</code>.</p><ul class="frag-list"><li class=frag>Paste <code>diagram.json</code> and <code>sketch.ino</code>, then press &#9654;</li><li class=frag>Change the timing; blink SOS</li><li class=frag>Try-this 3: green LED at 130 ms, red at 500 ms using <code>millis()</code></li></ul></div>
+<div class="labbox"><div class="lbl">Open</div><div class="url">labs.html#lab1</div><div class="lbl" style="margin-top:18px">Time</div><div class="url">15 minutes</div>
+<div class="lbl" style="margin-top:18px">Work in pairs</div><div style="color:var(--mute)">Driver types &middot; Navigator reads &middot; swap each lab</div></div></div></section><section class="slide " data-notes="Pressed = LOW feels backwards at first. This &#x27;active-low&#x27; convention is everywhere in hardware."><h2>Inputs: pull-ups and floating pins</h2><div class="two"><div>
+<ul class="frag-list"><li class="frag">An unconnected input <b>floats</b>: it picks up noise and reads random 0s and 1s.</li>
+<li class="frag">A <b>pull-up</b> resistor gently holds it HIGH.</li>
+<li class="frag">The button connects the pin to GND &rarr; reads <b>LOW</b> when pressed.</li>
+<li class="frag">The ESP32 has internal pull-ups: <code>pinMode(4, INPUT_PULLUP)</code></li></ul></div>
+<svg viewBox="0 0 420 380" class="diag"><text x="60" y="40" class="t2" style="font-size:16px">3.3 V</text><line x1="100" y1="50" x2="100" y2="90" class="ln"/>
+<rect x="88" y="90" width="24" height="70" rx="4" fill="none" stroke="#ffb547" stroke-width="3"/><text x="128" y="130" class="t2" style="font-size:15px" text-anchor="start">pull-up</text>
+<line x1="100" y1="160" x2="100" y2="210" class="ln"/><circle cx="100" cy="210" r="6" fill="#2ee6c5"/><line x1="100" y1="210" x2="300" y2="210" class="ln"/><text x="310" y="216" class="t2" style="font-size:16px" text-anchor="start">GPIO 4</text>
+<line x1="100" y1="210" x2="100" y2="260" class="ln"/><line class="sw" x1="100" y1="260" x2="140" y2="240" stroke="#ff6b8a" stroke-width="4"/><line x1="100" y1="290" x2="100" y2="330" class="ln"/><circle cx="100" cy="290" r="4" fill="#9fb0d3"/><circle cx="100" cy="260" r="4" fill="#9fb0d3"/>
+<text x="150" y="285" class="t2" style="font-size:15px" text-anchor="start">button</text><line x1="75" y1="330" x2="125" y2="330" class="ln"/><text x="80" y="360" class="t2" style="font-size:15px">GND</text></svg></div></section><section class="slide " data-notes="Ask: what are the risks of a long ISR? Other interrupts are delayed, and the main program freezes. Set a flag and get out."><h2>Polling vs. interrupts</h2><div class="two">
+<div class="tile frag"><b>&#x1F4F1; Polling</b>Checking your phone every few seconds for a message.<br><br><code>if (digitalRead(4) == LOW) &hellip;</code><br><br>Simple, but it wastes time and <i>misses</i> short events while the CPU is busy.</div>
+<div class="tile frag"><b>&#x1F514; Interrupt</b>The phone rings. You stop, answer, then carry on.<br><br><code>attachInterrupt(&hellip;, onButton, FALLING)</code><br><br>The hardware calls your <strong>ISR</strong> the moment the edge arrives.</div></div>
+<div class="frag rules"><b>ISR rules:</b> keep it tiny &middot; no <code>delay()</code>/<code>Serial</code> &middot; share data via <code>volatile</code> flags &middot; <code>IRAM_ATTR</code> keeps it in fast RAM</div></section><section class="slide " data-notes="Hardware fix: an RC filter plus a Schmitt trigger. Software fix: a time window, which is what Lab 2 uses."><h2>Switch bounce</h2><p class="big">One press &ne; one edge. Metal contacts <span class="hl">chatter</span> for a few milliseconds.</p>
+<svg viewBox="0 0 1000 250" class="diag"><text x="20" y="60" class="t2" style="font-size:16px" text-anchor="start">HIGH</text><text x="20" y="200" class="t2" style="font-size:16px" text-anchor="start">LOW</text>
+<path class="wave" d="M80,60 H300 V200 H315 V60 H330 V200 H340 V80 H350 V200 H365 V60 H372 V200 H900" fill="none" stroke="#2ee6c5" stroke-width="4"/>
+<g class="frag"><rect x="295" y="25" width="85" height="200" fill="rgba(255,107,138,.15)" stroke="#ff6b8a" stroke-dasharray="5 5"/><text x="337" y="245" class="t2" style="font-size:16px" fill="#ff6b8a">~5 ms of bounce</text></g>
+<g class="frag"><text x="650" y="120" class="t2" style="font-size:20px">Fix in software: ignore edges</text><text x="650" y="150" class="t2" style="font-size:20px">within 50&ndash;200 ms of the last one</text></g></svg></section><section class="slide " data-notes=""><div class="kick">Hands-on</div><h2>Lab 2: Buttons &amp; Interrupts</h2>
+<div class="two"><div><p class="big">Count presses with an ISR, compare it with polling, and see bounce for yourself.</p><ul class="frag-list"><li class=frag>Run the interrupt version and press the button</li><li class=frag>Set the debounce window to 0 &mdash; any double counts?</li><li class=frag>Add <code>delay(3000)</code> to both versions: which one misses presses?</li></ul></div>
+<div class="labbox"><div class="lbl">Open</div><div class="url">labs.html#lab2</div><div class="lbl" style="margin-top:18px">Time</div><div class="url">20 minutes</div>
+<div class="lbl" style="margin-top:18px">Work in pairs</div><div style="color:var(--mute)">Driver types &middot; Navigator reads &middot; swap each lab</div></div></div></section><section class="slide " data-notes="The staircase is exaggerated. Ask: what would an 8-bit ADC give? 256 levels, about 13 mV per step."><h2>The analog world &rarr; numbers: the ADC</h2><div class="two"><div>
+<ul class="frag-list"><li class="frag">Nature is analog: temperature, light, sound all give <i>voltages</i>.</li>
+<li class="frag">The <b>ADC</b> samples a voltage and returns a number.</li>
+<li class="frag">ESP32: <b>12-bit</b> &rarr; 2<sup>12</sup> = 4096 levels, 0&ndash;4095</li>
+<li class="frag">Resolution: 3.3 V / 4096 &asymp; <b>0.8 mV</b> per step</li>
+<li class="frag"><span class="tagp deep">Deep dive</span> The ESP32 ADC is not perfectly linear near 0 V and 3.3 V. Real products calibrate it, or use an external ADC.</li></ul></div>
+<svg viewBox="0 0 420 380" class="diag"><line x1="50" y1="330" x2="400" y2="330" class="ln"/><line x1="50" y1="330" x2="50" y2="30" class="ln"/>
+<text x="225" y="365" class="t2" style="font-size:15px">input voltage 0 &rarr; 3.3 V</text><text x="30" y="40" class="t2" style="font-size:14px" text-anchor="end">4095</text>
+<path class="frag" d="M50,330 L75,330 L75,305 L100,305 L100,280 L125,280 L125,255 L150,255 L150,230 L175,230 L175,205 L200,205 L200,180 L225,180 L225,155 L250,155 L250,130 L275,130 L275,105 L300,105 L300,80 L325,80 L325,55 L350,55 L350,30 L375,30 L375,5 L400,5 " fill="none" stroke="#2ee6c5" stroke-width="3"/>
+<line x1="50" y1="330" x2="400" y2="30" stroke="#ffb547" stroke-dasharray="6 6" class="frag"/><text x="300" y="200" class="t2 frag" style="font-size:15px" fill="#ffb547">ideal</text></svg></div></section><section class="slide " data-notes="The orange dashed lines show the average level. On the ESP32, the LEDC peripheral generates PWM in hardware, so the CPU is free."><h2>Numbers &rarr; the analog world: PWM</h2><div class="two"><div>
+<ul class="frag-list"><li class="frag">The pin can only be fully ON or OFF&hellip;</li>
+<li class="frag">&hellip;but switch it fast enough and the LED, motor or eye sees the <b>average</b>.</li>
+<li class="frag"><b>Duty cycle</b> = ON time / period</li>
+<li class="frag"><code>analogWrite(26, 64)</code> &rarr; 64/255 &asymp; 25 % &rarr; about 0.83 V average</li>
+<li class="frag">Used for LED dimming, motor speed, servo position, even audio</li></ul></div>
+<svg viewBox="0 0 420 380" class="diag"><g class="frag"><text x="10" y="70" class="t2" style="font-size:16px" text-anchor="start">25%</text><path d="M70,95 V45 H91.25 V95 H155 M155,95 V45 H176.25 V95 H240 M240,95 V45 H261.25 V95 H325 M325,95 V45 H346.25 V95 H410 " fill="none" stroke="#2ee6c5" stroke-width="3"/><line x1="70" y1="82.5" x2="410" y2="82.5" stroke="#ffb547" stroke-dasharray="5 5"/></g><g class="frag"><text x="10" y="180" class="t2" style="font-size:16px" text-anchor="start">50%</text><path d="M70,205 V155 H112.5 V205 H155 M155,205 V155 H197.5 V205 H240 M240,205 V155 H282.5 V205 H325 M325,205 V155 H367.5 V205 H410 " fill="none" stroke="#2ee6c5" stroke-width="3"/><line x1="70" y1="180.0" x2="410" y2="180.0" stroke="#ffb547" stroke-dasharray="5 5"/></g><g class="frag"><text x="10" y="290" class="t2" style="font-size:16px" text-anchor="start">75%</text><path d="M70,315 V265 H133.75 V315 H155 M155,315 V265 H218.75 V315 H240 M240,315 V265 H303.75 V315 H325 M325,315 V265 H388.75 V315 H410 " fill="none" stroke="#2ee6c5" stroke-width="3"/><line x1="70" y1="277.5" x2="410" y2="277.5" stroke="#ffb547" stroke-dasharray="5 5"/></g></svg></div></section><section class="slide " data-notes="Lunch follows this lab. Remind students to save (sign in) if they want to keep their work."><div class="kick">Hands-on</div><h2>Lab 3: ADC &amp; PWM</h2>
+<div class="two"><div><p class="big">Turn the knob, read the voltage, and dim the LED. Then build an automatic night lamp.</p><ul class="frag-list"><li class=frag>Watch <code>raw</code>, <code>volts</code> and <code>duty</code> in the Serial Monitor</li><li class=frag>Work out the ADC resolution</li><li class=frag>Night lamp with the LDR on GPIO 35</li></ul></div>
+<div class="labbox"><div class="lbl">Open</div><div class="url">labs.html#lab3</div><div class="lbl" style="margin-top:18px">Time</div><div class="url">20 minutes</div>
+<div class="lbl" style="margin-top:18px">Work in pairs</div><div style="color:var(--mute)">Driver types &middot; Navigator reads &middot; swap each lab</div></div></div></section><section class="slide section" data-notes=""><div class="secno">03</div><h1 class="sect">Talking to chips &amp; the cloud</h1><p class="sub">I&sup2;C &middot; sensors &middot; Wi-Fi &middot; MQTT</p></section><section class="slide " data-notes="For networks-minded students: I2C is a tiny multi-drop bus with addressing and ACKs. UART is the oldest and simplest of the three."><h2>How chips talk to each other</h2><table class="cmp">
+<tr><th></th><th>UART</th><th>I&sup2;C</th><th>SPI</th></tr>
+<tr class="frag"><td>Wires</td><td>TX, RX</td><td>SDA, SCL (shared)</td><td>MOSI, MISO, SCK + CS per device</td></tr>
+<tr class="frag"><td>Devices</td><td>2 (point-to-point)</td><td>many, by <b>7-bit address</b></td><td>many, by <b>chip-select</b></td></tr>
+<tr class="frag"><td>Speed</td><td>~115 kbit/s typical</td><td>100&ndash;400 kHz (up to 1 MHz)</td><td>10s of MHz</td></tr>
+<tr class="frag"><td>Seen in</td><td>Serial Monitor, GPS, GSM modules</td><td>sensors, OLEDs, RTC chips</td><td>SD cards, fast displays, flash</td></tr></table>
+<p class="frag center sub">Same idea as networking: a physical layer, framing, and addressing.</p></section><section class="slide " data-notes="Only the device whose address matches answers. The DHT22 in Lab 4 is NOT on I2C; it uses its own single-wire protocol, a common source of confusion."><h2>I&sup2;C in one picture</h2>
+<svg viewBox="0 0 1000 330" class="diag"><rect x="30" y="110" width="160" height="120" rx="12" class="bx hlb"/><text x="110" y="165" class="t1" style="font-size:22px">ESP32</text><text x="110" y="195" class="t2" style="font-size:15px">controller</text>
+<line x1="190" y1="140" x2="900" y2="140" stroke="#2ee6c5" stroke-width="4"/><text x="912" y="146" class="t2" style="font-size:16px" text-anchor="start">SDA</text>
+<line x1="190" y1="200" x2="900" y2="200" stroke="#ffb547" stroke-width="4"/><text x="912" y="206" class="t2" style="font-size:16px" text-anchor="start">SCL</text>
+<g class="frag"><line x1="330" y1="140" x2="330" y2="260" class="ln"/><line x1="360" y1="200" x2="360" y2="260" class="ln"/><rect x="280" y="260" width="130" height="60" rx="10" class="bx"/><text x="345" y="290" class="t2" style="font-size:16px">OLED</text><text x="345" y="310" class="t2" style="font-size:14px" fill="#2ee6c5">0x3C</text></g><g class="frag"><line x1="560" y1="140" x2="560" y2="260" class="ln"/><line x1="590" y1="200" x2="590" y2="260" class="ln"/><rect x="510" y="260" width="130" height="60" rx="10" class="bx"/><text x="575" y="290" class="t2" style="font-size:16px">RTC clock</text><text x="575" y="310" class="t2" style="font-size:14px" fill="#2ee6c5">0x68</text></g><g class="frag"><line x1="790" y1="140" x2="790" y2="260" class="ln"/><line x1="820" y1="200" x2="820" y2="260" class="ln"/><rect x="740" y="260" width="130" height="60" rx="10" class="bx"/><text x="805" y="290" class="t2" style="font-size:16px">BME280</text><text x="805" y="310" class="t2" style="font-size:14px" fill="#2ee6c5">0x76</text></g>
+<text x="500" y="60" class="t2 frag" style="font-size:20px">START &rarr; address + R/W &rarr; ACK &rarr; data bytes &rarr; STOP</text></svg></section><section class="slide " data-notes="Libraries are the usual stumbling block. Point to the libraries.txt shortcut on the lab page."><div class="kick">Hands-on</div><h2>Lab 4: Sensor + Display</h2>
+<div class="two"><div><p class="big">Read temperature and humidity from a DHT22 and show them on an I&sup2;C OLED, with an alarm LED.</p><ul class="frag-list"><li class=frag>Libraries: Adafruit SSD1306, Adafruit GFX, DHT sensor library for ESPx</li><li class=frag>Click the DHT22 and push it above 35 &deg;C</li><li class=frag>Add &deg;F, a humidity bar, and hysteresis</li></ul></div>
+<div class="labbox"><div class="lbl">Open</div><div class="url">labs.html#lab4</div><div class="lbl" style="margin-top:18px">Time</div><div class="url">25 minutes</div>
+<div class="lbl" style="margin-top:18px">Work in pairs</div><div style="color:var(--mute)">Driver types &middot; Navigator reads &middot; swap each lab</div></div></div></section><section class="slide " data-notes=""><h2>From device to cloud</h2>
+<svg viewBox="0 0 1000 300" class="diag"><defs><marker id="ar3" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#9fb0d3"/></marker></defs>
+<g class="frag"><rect x="20" y="90" width="200" height="110" rx="14" class="bx"/><text x="120" y="140" class="t1" style="font-size:22px">ESP32 + DHT22</text><text x="120" y="172" class="t2" style="font-size:15px">publishes JSON</text><line x1=222 y1=145 x2=262 y2=145 class=ln marker-end=url(#ar3) /></g><g class="frag"><rect x="265" y="90" width="200" height="110" rx="14" class="bx"/><text x="365" y="140" class="t1" style="font-size:22px">Wi-Fi AP</text><text x="365" y="172" class="t2" style="font-size:15px">Wokwi-GUEST</text><line x1=467 y1=145 x2=507 y2=145 class=ln marker-end=url(#ar3) /></g><g class="frag"><rect x="510" y="90" width="200" height="110" rx="14" class="bx hlb"/><text x="610" y="140" class="t1" style="font-size:22px">MQTT broker</text><text x="610" y="172" class="t2" style="font-size:15px">broker.hivemq.com</text><line x1=712 y1=145 x2=752 y2=145 class=ln marker-end=url(#ar3) /></g><g class="frag"><rect x="755" y="90" width="200" height="110" rx="14" class="bx"/><text x="855" y="140" class="t1" style="font-size:22px">Dashboard</text><text x="855" y="172" class="t2" style="font-size:15px">your phone / projector</text></g>
+<text x="500" y="260" class="t2 frag" style="font-size:19px">and back again: dashboard &rarr; broker &rarr; ESP32 &rarr; LED</text></svg></section><section class="slide " data-notes="This is the publish-subscribe pattern from software design, running over TCP. Mention QoS 0/1/2 only if asked."><h2>MQTT: publish / subscribe</h2><div class="two"><div>
+<ul class="frag-list"><li class="frag">Devices never talk directly. They talk to a <b>broker</b>.</li>
+<li class="frag"><b>Publish</b> a message to a <b>topic</b>: <code>navkis/ews2026/ravi/data</code></li>
+<li class="frag"><b>Subscribe</b> to topics, with wildcards: <code>navkis/ews2026/+/data</code></li>
+<li class="frag">Tiny headers and one long-lived TCP connection &rarr; ideal for small, battery-powered devices</li>
+<li class="frag">Compare with HTTP: the device would have to keep <i>asking</i> &ldquo;any commands for me?&rdquo;</li></ul></div>
+<svg viewBox="0 0 420 380" class="diag"><circle cx="210" cy="190" r="70" class="bx hlb"/><text x="210" y="198" class="t1" style="font-size:22px">broker</text>
+<g class="frag"><rect x="20" y="30" width="120" height="50" rx="10" class="bx"/><text x="80" y="61" class="t2" style="font-size:15px">ESP32 Ravi</text><line x1="80" y1="80" x2="151.5" y2="129.25" class="ln"/></g><g class="frag"><rect x="280" y="30" width="120" height="50" rx="10" class="bx"/><text x="340" y="61" class="t2" style="font-size:15px">ESP32 Asha</text><line x1="340" y1="80" x2="268.5" y2="129.25" class="ln"/></g><g class="frag"><rect x="20" y="300" width="120" height="50" rx="10" class="bx"/><text x="80" y="331" class="t2" style="font-size:15px">Dashboard</text><line x1="80" y1="300" x2="151.5" y2="250.75" class="ln"/></g><g class="frag"><rect x="280" y="300" width="120" height="50" rx="10" class="bx"/><text x="340" y="331" class="t2" style="font-size:15px">Phone app</text><line x1="340" y1="300" x2="268.5" y2="250.75" class="ln"/></g></svg></div></section><section class="slide " data-notes="THE moment of the day. Put the dashboard on the projector. Count devices as they come online. Then press All ON. Security point: the public broker is open, so no personal data."><div class="kick">Hands-on</div><h2>Lab 5: Your ESP32 on the Internet</h2>
+<div class="two"><div><p class="big">Put your name in the sketch, run it, and watch yourself appear on the class dashboard. Then let a friend switch your LED.</p><ul class="frag-list"><li class=frag>Set <code>STUDENT = "your-name"</code></li><li class=frag>Wokwi-GUEST Wi-Fi &rarr; HiveMQ public broker</li><li class=frag>Dashboard: <b>dashboard.html</b> (projector and your phone)</li></ul></div>
+<div class="labbox"><div class="lbl">Open</div><div class="url">labs.html#lab5</div><div class="lbl" style="margin-top:18px">Time</div><div class="url">30 minutes</div>
+<div class="lbl" style="margin-top:18px">Work in pairs</div><div style="color:var(--mute)">Driver types &middot; Navigator reads &middot; swap each lab</div></div></div></section><section class="slide " data-notes=""><div class="kick">Live</div><h2>Class dashboard</h2><div class="two"><div>
+<p class="big">Scan to open it on your phone, then switch <i>someone else&rsquo;s</i> LED.</p>
+<p class="frag">Everything you just built &mdash; sensor, firmware, Wi-Fi, broker, web client &mdash; is the architecture of real IoT products: smart meters, cold-chain trackers, farm sensors.</p></div>
+<div class="labbox" style="text-align:center"><div class="qrbox" data-qr="dashboard.html"></div><div class="url" style="margin-top:10px">dashboard.html</div></div></div></section><section class="slide section" data-notes=""><div class="secno">04</div><h1 class="sect">Challenge &amp; beyond the superloop</h1><p class="sub">RTOS &middot; real products &middot; careers</p></section><section class="slide " data-notes="Form teams. Circulate. At 3:20 show the reference solution and ask the best two teams to demo."><div class="kick">Mini-challenge &middot; teams of 2&ndash;3 &middot; 40 min</div><h2>Smart Street Light</h2><div class="two">
+<table class="cmp"><tr><th>Condition</th><th>Lamp</th></tr><tr class="frag"><td>Daylight</td><td>OFF</td></tr><tr class="frag"><td>Night, nobody around</td><td>DIM (20 %)</td></tr><tr class="frag"><td>Night + motion</td><td>FULL for 5 s after the last motion</td></tr></table>
+<div class="labbox"><div class="lbl">Parts</div><div style="font-size:20px">LDR on GPIO 35 &middot; PIR on GPIO 27 &middot; lamp on GPIO 26</div>
+<div class="lbl" style="margin-top:16px">Score</div><div style="font-size:18px">3 day/night &middot; +3 dim/full &middot; +2 <code>millis()</code> hold &middot; +2 print on change &middot; <b>+3</b> publish to the dashboard</div></div></div></section><section class="slide " data-notes="Map it to the OS course: process states (ready, running, blocked), priority scheduling, producer-consumer via a queue. Lab 6 is the hands-on version."><h2>When the superloop is not enough: RTOS</h2><div class="two"><div>
+<ul class="frag-list"><li class="frag">A <b>task</b> is like a thread with its own stack and a priority</li>
+<li class="frag">The <b>scheduler</b> runs the highest-priority ready task, preemptively</li>
+<li class="frag"><code>vTaskDelay()</code> blocks only <i>this</i> task &mdash; the others keep running</li>
+<li class="frag"><b>Queues</b> and <b>semaphores</b> pass data and protect shared resources</li>
+<li class="frag">The ESP32 runs FreeRTOS on <b>2 cores</b>. Wi-Fi already lives in its own tasks!</li></ul></div>
+<svg viewBox="0 0 420 380" class="diag"><text x="10" y="70" class="t2" style="font-size:15px" text-anchor="start">sensor (P2)</text><text x="10" y="150" class="t2" style="font-size:15px" text-anchor="start">blink (P1)</text><text x="10" y="230" class="t2" style="font-size:15px" text-anchor="start">print (P1)</text><text x="10" y="310" class="t2" style="font-size:15px" text-anchor="start">idle</text>
+<rect class="frag" x="110" y="50" width="28" height="30" rx="4" fill="#ff6b8a"/><rect class="frag" x="140" y="130" width="28" height="30" rx="4" fill="#2ee6c5"/><rect class="frag" x="170" y="210" width="28" height="30" rx="4" fill="#ffb547"/><rect class="frag" x="200" y="290" width="28" height="30" rx="4" fill="#25335a"/><rect class="frag" x="230" y="290" width="28" height="30" rx="4" fill="#25335a"/><rect class="frag" x="260" y="130" width="28" height="30" rx="4" fill="#2ee6c5"/><rect class="frag" x="290" y="290" width="28" height="30" rx="4" fill="#25335a"/><rect class="frag" x="320" y="50" width="28" height="30" rx="4" fill="#ff6b8a"/><rect class="frag" x="350" y="210" width="28" height="30" rx="4" fill="#ffb547"/><rect class="frag" x="380" y="290" width="28" height="30" rx="4" fill="#25335a"/>
+<line x1="110" y1="350" x2="410" y2="350" class="ln"/><text x="260" y="372" class="t2" style="font-size:14px">time &rarr;</text></svg></div></section><section class="slide " data-notes=""><div class="kick">Hands-on</div><h2>Lab 6: FreeRTOS multitasking</h2>
+<div class="two"><div><p class="big">Three tasks, one queue, two cores. Then starve a task on purpose, and see why priorities matter.</p><ul class="frag-list"><li class=frag>blink, sensor and print tasks</li><li class=frag>Producer&ndash;consumer through <code>xQueueSend</code> / <code>xQueueReceive</code></li><li class=frag>Pin a task to core 0 and watch the core ID</li></ul></div>
+<div class="labbox"><div class="lbl">Open</div><div class="url">labs.html#lab6</div><div class="lbl" style="margin-top:18px">Time</div><div class="url">bonus / at home</div>
+<div class="lbl" style="margin-top:18px">Work in pairs</div><div style="color:var(--mute)">Driver types &middot; Navigator reads &middot; swap each lab</div></div></div></section><section class="slide " data-notes="Mention over-the-air updates and security: default passwords and unencrypted MQTT are behind many real IoT breaches."><h2>How real products are built</h2>
+<div class="flow"><div class="frag"><b>Prototype</b><small>dev board + breadboard (+ Wokwi!)</small></div><div class="frag"><b>Custom PCB</b><small>schematic, layout, power design</small></div><div class="frag"><b>Firmware</b><small>drivers, RTOS, state machines, tests</small></div><div class="frag"><b>Hardening</b><small>watchdog, brown-out, secure boot, OTA updates</small></div><div class="frag"><b>Certification</b><small>EMC, safety, radio (e.g. WPC in India)</small></div><div class="frag"><b>Production</b><small>factory test jigs, provisioning</small></div></div>
+<p class="frag center big">Writing the blink is 1 %. Making it work for 5 years in the field is the job.</p></section><section class="slide " data-notes="Bengaluru is one of the world&#x27;s largest embedded and automotive software hubs, a 3-4 hour drive from Hassan."><h2>Careers for a CSE graduate</h2><div class="grid3">
+<div class="frag tile"><b>Firmware engineer</b>C/C++, RTOS, drivers</div>
+<div class="frag tile"><b>IoT developer</b>device + cloud + app, end to end</div>
+<div class="frag tile"><b>Embedded Linux</b>Yocto, kernel drivers, BSPs</div>
+<div class="frag tile"><b>Automotive software</b>AUTOSAR, functional safety, EV systems</div>
+<div class="frag tile"><b>Edge AI / TinyML</b>ML models on microcontrollers</div>
+<div class="frag tile"><b>Test &amp; validation</b>hardware-in-the-loop, automation</div></div>
+<p class="frag sub center">Example employers in India (examples, not a ranking): Bosch, Continental, Qualcomm, Texas Instruments, NXP, Infineon, Tata Elxsi, KPIT, L&amp;T Technology Services, Ather Energy &mdash; plus many IoT and drone start-ups in Bengaluru.</p></section><section class="slide " data-notes="The last step matters most for placements: one complete, documented project beats ten half-finished ones."><h2>Your roadmap after today</h2><div class="road"><div class="frag"><span>1</span><b>Replay the labs</b><small>in Wokwi; change one thing in each</small></div><div class="frag"><span>2</span><b>Buy an ESP32</b><small>plus a breadboard and a sensor kit</small></div><div class="frag"><span>3</span><b>Sharpen C</b><small>pointers, structs, bit operations</small></div><div class="frag"><span>4</span><b>Go lower</b><small>ESP-IDF or STM32, datasheets, a logic analyser</small></div><div class="frag"><span>5</span><b>Learn an RTOS</b><small>FreeRTOS, then Zephyr / embedded Linux</small></div><div class="frag"><span>6</span><b>Ship a project</b><small>on GitHub, with a README and a video</small></div></div></section><section class="slide " data-notes=""><div class="kick">Wrap-up</div><h2>Quiz &amp; feedback</h2><div class="two"><div>
+<p class="big">15 questions &middot; about 8 minutes &middot; on your phone</p>
+<p>Enter your name and USN, answer, and see the explanations as you go.</p></div>
+<div class="labbox" style="text-align:center"><div class="qrbox" data-qr="quiz.html"></div><div class="url" style="margin-top:10px">quiz.html</div></div></div></section><section class="slide title" data-notes=""><div class="title-wrap"><h1 class="hero" style="font-size:84px">Thank you!</h1><p class="tag">Blink. Sense. Connect. &mdash; now go build something.</p>
+<div class="byline"><b>Dr. Sathisha R N</b> &middot; satisharyan@gmail.com<br>Thanks to the Department of CSE, NAVKIS College of Engineering, Hassan</div></div>
+<div class="qrbox" data-qr="index.html" style="position:absolute;right:90px;bottom:90px"></div></section></div><div id="bar"></div><div id="num"></div><div id="help">&larr; &rarr; navigate &middot; N notes &middot; F fullscreen &middot; A reveal all</div><div id="notes"></div><script>
+const slides=[...document.querySelectorAll('.slide')];let cur=0;
+function fit(){const s=Math.min(innerWidth/1280,innerHeight/720);document.getElementById('stage').style.transform=`translate(-50%,-50%) scale(${s})`}
+function frags(i){return [...slides[i].querySelectorAll('.frag')]}
+function go(i,showAll){i=Math.max(0,Math.min(slides.length-1,i));slides.forEach((s,k)=>{s.classList.toggle('on',k===i);s.classList.toggle('prev',k<i)});
+ frags(i).forEach(f=>f.classList.toggle('vis',!!showAll));cur=i;history.replaceState(null,'','#'+(i+1));
+ document.getElementById('bar').style.width=((i+1)/slides.length*100)+'%';document.getElementById('num').textContent=(i+1)+' / '+slides.length;
+ document.getElementById('notes').innerHTML='<b>Notes ('+(i+1)+'):</b> '+(slides[i].dataset.notes||'&mdash;')}
+function next(){const h=frags(cur).find(f=>!f.classList.contains('vis'));if(h)h.classList.add('vis');else if(cur<slides.length-1)go(cur+1)}
+function prev(){const v=frags(cur).filter(f=>f.classList.contains('vis'));if(v.length)v[v.length-1].classList.remove('vis');else if(cur>0)go(cur-1,true)}
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' ','Enter'].includes(e.key)){e.preventDefault();next()}
+ else if(['ArrowLeft','PageUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
+ else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1,true);
+ else if(e.key==='n'||e.key==='N'){const n=document.getElementById('notes');n.style.display=n.style.display==='block'?'none':'block'}
+ else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
+ else if(e.key==='a'||e.key==='A'){frags(cur).forEach(f=>f.classList.add('vis'))}});
+document.addEventListener('click',e=>{if(e.target.closest('a,button'))return;(e.clientX>innerWidth/3?next:prev)()});
+let tx=null;addEventListener('touchstart',e=>tx=e.touches[0].clientX);addEventListener('touchend',e=>{if(tx===null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50)(d<0?next:prev)();tx=null});
+addEventListener('resize',fit);fit();
+document.querySelectorAll('[data-qr]').forEach(el=>qrInto(el,siteUrl(el.dataset.qr),5));
+go(Math.max(0,(parseInt(location.hash.slice(1))||1)-1));
+addEventListener('hashchange',()=>go(Math.max(0,(parseInt(location.hash.slice(1))||1)-1)));
+</script></body></html>

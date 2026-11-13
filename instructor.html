@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Instructor run-sheet — From Code to Silicon</title>
+<link rel="stylesheet" href="assets/style.css">
+<script src="assets/config.js"></script><script src="assets/common.js"></script>
+<style>td:first-child{white-space:nowrap;font-family:var(--mono);color:var(--teal)}@media print{body{font-size:11px}}</style>
+</head><body>
+<main class="wrap">
+<section class="hero" style="padding-bottom:0"><div class="kicker">Instructor only · not linked from the student pages</div>
+<h1 style="font-size:40px">Run-sheet: NAVKIS CSE, 25 Nov 2026</h1>
+<p class="lead">10:30 AM – 4:00 PM · 60+ students · Wokwi ESP32 simulator · no hardware needed. <button class="btn small noprint" onclick="print()">Print</button></p></section>
+
+<h2>Before the day</h2>
+<table><tr><th>When</th><th>Task</th><th>Done</th></tr>
+<tr><td>By 18 Nov</td><td>Confirm with NAVKIS: the lab has 30+ PCs (one per pair) with Chrome or Edge, internet, and <b>wokwi.com</b>, <b>broker.hivemq.com</b> and <b>github.io</b> are not blocked; a projector with HDMI; a microphone for 60+ students.</td><td>☐</td></tr>
+<tr><td>By 18 Nov</td><td>Publish this site on GitHub Pages (README step 1). Test every page on your phone.</td><td>☐</td></tr>
+<tr><td>By 20 Nov</td><td>Create the 7 Wokwi projects in your account and paste their links into <code>assets/config.js</code> (README step 2). Open each link in a private window and run it.</td><td>☐</td></tr>
+<tr><td>By 20 Nov</td><td>Run Lab 5 with your own name and check that it appears on the dashboard. Also test <b>Demo mode</b>.</td><td>☐</td></tr>
+<tr><td>By 22 Nov</td><td>Optional: quiz score collection (README step 3) and a Google Form for feedback, linked in <code>config.js</code>.</td><td>☐</td></tr>
+<tr><td>By 22 Nov</td><td>Ask the host to share the site link with students and to have them open <b>wokwi.com</b> once (and sign in with Google if they want to save their work).</td><td>☐</td></tr>
+<tr><td>Day − 1</td><td>Download the site ZIP to a pen drive. If the network fails, the slides still work offline (open <code>slides.html</code>). Charge your phone for a hotspot as a backup for the projector laptop.</td><td>☐</td></tr>
+<tr><td>Bring</td><td>Optional real ESP32 board, LED and USB cable to pass around during Session 1 (“this is what you are simulating”). A clicker.</td><td>☐</td></tr></table>
+
+<h2>Minute-by-minute</h2>
+<table><tr><th>Time</th><th>Activity</th><th>Slides / page</th><th>Watch out for</th></tr>
+<tr><td>10:00</td><td>Arrive, test the projector, open slides (F = fullscreen, N = notes) and the dashboard in a second tab</td><td>—</td><td>Screen resolution; zoom the browser to 100%</td></tr>
+<tr><td>10:30</td><td>Welcome, about me, plan for the day, everyone opens wokwi.com and the site</td><td>1–4</td><td>Seat in pairs: driver + navigator</td></tr>
+<tr><td>10:40</td><td>What embedded is, laptop vs ESP32, constraints</td><td>5–9</td><td>Ask questions to the room; keep it interactive</td></tr>
+<tr><td>11:00</td><td>MCU anatomy, CSE mapping, superloop, toolchain</td><td>10–13</td><td>—</td></tr>
+<tr><td>11:15</td><td><b>Live demo:</b> first blink in a blank Wokwi project</td><td>14</td><td>Go slowly; the room types along</td></tr>
+<tr><td>11:30</td><td>Tea</td><td></td><td></td></tr>
+<tr><td>11:45</td><td>GPIO, delay vs millis → <b>Lab 1</b></td><td>15–18</td><td>Pasting the diagram into the wrong tab</td></tr>
+<tr><td>12:10</td><td>Pull-ups, interrupts, bounce → <b>Lab 2</b></td><td>19–22</td><td>Explain why “pressed = LOW”</td></tr>
+<tr><td>12:35</td><td>ADC, PWM → <b>Lab 3</b></td><td>23–25</td><td>Clicking the pot to show its knob</td></tr>
+<tr><td>1:00</td><td>Lunch. Remind students to sign in and save.</td><td></td><td></td></tr>
+<tr><td>1:45</td><td>Buses, I²C → <b>Lab 4</b></td><td>26–29</td><td>Missing libraries → use libraries.txt</td></tr>
+<tr><td>2:10</td><td>Device to cloud, MQTT → <b>Lab 5</b>. Put the dashboard on the projector, count devices, press “All ON”.</td><td>30–33</td><td>Students forgetting to change STUDENT; spaces in names</td></tr>
+<tr><td>2:45</td><td><b>Mini-challenge</b> in teams; fast finishers try Lab 6</td><td>34–35 (Lab 6: 37)</td><td>Show the scoring; set a timer</td></tr>
+<tr><td>3:20</td><td>Best two teams demo; reveal the reference solution</td><td>labs.html#challenge</td><td>—</td></tr>
+<tr><td>3:25</td><td>RTOS in 10 minutes, how real products are built, careers, roadmap</td><td>36, 38–40</td><td>Keep careers to 5 minutes</td></tr>
+<tr><td>3:45</td><td>Quiz on phones, feedback, thanks</td><td>41–42</td><td>Close on time at 4:00</td></tr></table>
+
+<h2>If something goes wrong</h2>
+<table><tr><th>Problem</th><th>Fix</th></tr>
+<tr><td>Wokwi slow or queued</td><td>Ask pairs to share one simulation, or let them read the code while you demo on the projector. The free compiler can queue when 30+ people press Start at once; stagger by rows.</td></tr>
+<tr><td>Library not found (Lab 4/5)</td><td>Library Manager → + → type the exact name, or add a <code>libraries.txt</code> file with the list from the lab page.</td></tr>
+<tr><td>Dashboard shows “Offline”</td><td>Switch the broker selector to EMQX. If you switch, students must also change <code>MQTT_BROKER</code> to <code>broker.emqx.io</code>. If the college firewall blocks WebSockets, use your phone hotspot for the projector laptop. Students' ESP32s still work, because they connect through Wokwi's cloud.</td></tr>
+<tr><td>No devices appear</td><td>Check the topic root in the sketch (<code>navkis/ews2026</code>) matches <code>config.js</code>. Ask one student to read their Serial Monitor aloud.</td></tr>
+<tr><td>Internet down completely</td><td>Slides work offline from the ZIP. Do the labs as a projector walkthrough, and give the site link for practice at home.</td></tr></table>
+<p style="color:var(--mute)">Slide numbers refer to the current deck (42 slides). Use the arrow keys, or type the number into the URL (<code>slides.html#20</code>).</p>
+</main></body></html>
